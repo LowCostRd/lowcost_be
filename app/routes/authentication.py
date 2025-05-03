@@ -1,21 +1,18 @@
 from flask import Blueprint,request,jsonify
-from ..models.user import User
-from .. import mongo
+from ..services.user_authentication_service import UserAuthenticationService
+from ..exception.copy_exception import CopyException
 
 auth_bp = Blueprint('authentication', __name__)
+user_service = UserAuthenticationService()
 
 @auth_bp.route('/register',methods=['POST'])
 def register_user():
     data = request.get_json()
 
-    required_fields = ['first_name', 'last_name', 'email_address', 'phone_number', 'password']
-
-    for field in required_fields:
-        if not data.get(field):
-            return jsonify({"error": f"{field} is required"}), 400
-        
-    user = User(**data)
-    result = mongo.db.users.insert_one(user.to_dict())
+    try:
+        response = user_service.registration(data)
+        return jsonify(response), 201
+    except CopyException as e:
+        return jsonify(e.to_dict()), 400
 
     
-    return jsonify({"id": str(result.inserted_id)}), 201

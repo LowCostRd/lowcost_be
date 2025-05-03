@@ -1,0 +1,1 @@
+registration_message = "Verify your email to complete registration"
