@@ -1,14 +1,21 @@
 from flask import Flask
-from flask_pymongo import PyMongo
+from .extensions import mongo
+from dotenv import load_dotenv
+import os
 
-mongo = PyMongo()
+
 
 def create_app():
     app = Flask(__name__)
-    app.config["MONGO_URI"] = "mongodb://localhost:27017/copy"
+    load_dotenv()
+    app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+    app.config["MONGO_POOL_SIZE"] = os.getenv("MONGO_POOL_SIZE")
+    app.config["MONGO_MAX_POOL_SIZE"] = os.getenv("MONGO_MAX_POOL_SIZE")
     mongo.init_app(app)
 
     from .routes import register_routes
     register_routes(app)
     
     return app
+
+

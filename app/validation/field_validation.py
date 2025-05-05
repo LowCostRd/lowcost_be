@@ -5,9 +5,10 @@ from ..constant.error_message import *
 def validate_registration_field(data: dict):
     required_fields = ['first_name', 'last_name', 'email_address', 'phone_number', 'password', 'role']
 
-    for field in required_fields:
-            if not data.get(field):
-                raise CopyException(required_field["required_field"](field),400)
+    missing_fields = [field for field in required_fields if not data.get(field) or not str(data[field]).strip()]
+    
+    if missing_fields:
+       raise CopyException(required_field["required_field"](missing_fields[0]),400)
 
 def validate_user_role(data:dict):
      try:
