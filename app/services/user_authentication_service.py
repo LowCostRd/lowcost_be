@@ -29,4 +29,4 @@ class UserAuthenticationService(UserAuthentication):
          data["role"] = role
          user = User(**data)
          mongo.db.users.insert_one(user.to_dict())
-         return {registration_message}
+         

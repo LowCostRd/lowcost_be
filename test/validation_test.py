@@ -1,6 +1,8 @@
 from unittest import TestCase
 from app.validation.field_validation import *
 from app.exception.copy_exception import CopyException
+from app.validation.validate_email_address import *
+
 
 
 
@@ -198,3 +200,19 @@ class TestValidation(TestCase):
         
         with self.assertRaises(CopyException):
              validate_registration_field(required_fields) 
+    
+    def test_valid_email(self):
+         email = "test@gmail.com"
+
+         try:
+              validate_email(email)
+         except CopyException as e:
+              self.fail(e.message)
+    
+    def test_invalid_email(self):
+        email = "invalid email"
+
+        with self.assertRaises(CopyException):
+             validate_email(email)
+    
+    
