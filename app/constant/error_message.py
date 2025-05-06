@@ -8,3 +8,5 @@ email_and_otp_required = 'Email address and OTP are required.'
 invalid_otp = 'Invalid or expired OTP.'
 otp_failed_to_send = "Failed to send OTP."
 email_failed_to_send_otp = "Error sending OTP email."
+user_not_found = "User not found."
+user_is_verified = "User is already verified. No OTP sent."

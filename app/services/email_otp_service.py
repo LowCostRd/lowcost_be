@@ -5,13 +5,15 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from app.exception.copy_exception import CopyException
-from app.repository.user_repository import update_user_to_verified
+from app.repository.user_repository import *
 from app.validation.field_validation import verify_otp_field
 from .. import mongo
 from dotenv import load_dotenv
 from ..repository.otp_repository import *
 from ..constant.error_message import *
 from app.models.otp import Otp
+from app.validation.validate_email_address import *
+from app.constant.success_message import otp_resent
 
 
 class EmailOTPService:
@@ -84,4 +86,25 @@ class EmailOTPService:
         raise CopyException(invalid_otp,400)
     
      update_user_to_verified(email)
+
+    @classmethod
+    def resend_otp(cls, data)->str:
+        email_address = data.get("email_address")
+    
+        validate_email_not_empty(email_address)
+
+        user = get_user_by_email_address(email_address)
+
+        if not user:
+            raise CopyException(user_not_found, 404)
+
+        if user.get("is_verified") is False:
+            EmailOTPService.send_and_store_otp(email_address)
+            return  f"{ otp_resent["message"](email_address)}"
+       
+        else:
+            raise CopyException(user_is_verified,409)
+        
+
+         
 

@@ -21,6 +21,10 @@ def validate_email(email_address : str):
     if not re.match(email_regex,email_address):
         raise CopyException(invalid_email_format, 400)
 
+def validate_email_not_empty(email:str):
+    if not email or not email.strip() or email.strip().lower() == "null": 
+        raise CopyException(organization_name_required, 400)
+
 
 
   
