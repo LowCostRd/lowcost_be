@@ -7,7 +7,7 @@ class Otp:
         self.id = uuid.uuid4
         self.email = email
         self.otp = otp
-        self.created_at = datetime.now(),
+        self.created_at = datetime.now()
         self.expires_at = datetime.now() + timedelta(minutes=expiring_minutes)
     
     def to_dict(self):

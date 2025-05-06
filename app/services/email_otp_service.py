@@ -33,24 +33,23 @@ class EmailOTPService:
 
     @classmethod
     def send_otp_email(cls, to_email: str, otp: str):
+        with open("templates/otp_email_template.html", "r") as file:
+            template = file.read()
+            html_content = template.replace("{{ otp }}", otp).replace("{{ expiry }}", str(cls.OTP_EXPIRY_MINUTES))
+
         message = Mail(
             from_email=cls.FROM_EMAIL,
             to_emails=to_email,
             subject='Your OTP Code',
-            html_content=(
-                f"<p>Hello,</p>"
-                f"<p>Your One-Time Password (OTP) is: <strong>{otp}</strong></p>"
-                f"<p>This OTP will expire in {cls.OTP_EXPIRY_MINUTES} minutes.</p>"
-            )
-        )
+            html_content= html_content)
         try:
             load_dotenv()
             sg = SendGridAPIClient(api_key=os.getenv('SENDGRID_API_KEY'))
             response = sg.send(message)
             if response.status_code not in range(200, 300):
-                raise CopyException(otp_failed_to_send, {response.status_code})
+                raise CopyException(otp_failed_to_send, response.status_code)
         except Exception as e:
-            raise CopyException(email_failed_to_send_otp, {str(e)})
+            raise CopyException(email_failed_to_send_otp, e.code)
 
     @classmethod
     def send_and_store_otp(cls, email: str):
