@@ -11,7 +11,7 @@ class TestEmailCheck(TestCase):
         with self.assertRaises(CopyException) as context:
             check_if_email_address_exist('test@email.com')
 
-        self.assertEqual(context.exception.message, 'email address exist')
+        self.assertEqual(context.exception.message, 'email address exist.')
         self.assertEqual(context.exception.code, 409)
 
     @patch('app.validation.validate_email_address.get_user_by_email_address')
