@@ -33,6 +33,10 @@ def validate_organization_name(data: dict):
     if not organization_name or not organization_name.strip() or organization_name.strip().lower() == "null": 
         raise CopyException(organization_name_required, 400)
 
+def verify_otp_field(email,otp):
+    if not email or not otp:
+        raise CopyException(email_and_otp_required,400)
+
           
           
      

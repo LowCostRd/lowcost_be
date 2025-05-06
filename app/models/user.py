@@ -14,6 +14,7 @@ class User:
         self.role = role
         self.organization_name = organization_name or ""
         self.created_at = datetime.now()
+        self.is_verified = False
 
     def to_dict(self):
         return {
@@ -25,5 +26,6 @@ class User:
             "password": self.password,
             "role" : self.role.value,
             "organization_name": self.organization_name,
-            "created_at": self.created_at
+            "is_verified" : self.is_verified,
+            "created_at": self.created_at,
         }

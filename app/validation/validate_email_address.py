@@ -6,7 +6,6 @@ from ..constant.error_message import *
 from dotenv import load_dotenv
 
 
-
 def check_if_email_address_exist(email_address : str):
 
     user = get_user_by_email_address(email_address)
@@ -21,4 +20,8 @@ def validate_email(email_address : str):
 
     if not re.match(email_regex,email_address):
         raise CopyException(invalid_email_format, 400)
+
+
+
+  
 
