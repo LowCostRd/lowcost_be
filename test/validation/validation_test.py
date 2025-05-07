@@ -214,5 +214,44 @@ class TestValidation(TestCase):
 
         with self.assertRaises(CopyException):
              validate_email(email)
+     
+    def test_empty_email_otp_will_fail(self):
+         with self.assertRaises(CopyException):
+              verify_otp_field("","785698")
+     
+    def test_empty_email_otp_cannot_be_null(self):
+         with self.assertRaises(CopyException):
+              verify_otp_field("null","785698")
+     
+    def test_empty_email_otp_cannot_be_Null(self):
+         with self.assertRaises(CopyException):
+              verify_otp_field("Null","785698")
+     
+    def test_empty__otp_cannot_be_Null(self):
+         with self.assertRaises(CopyException):
+              verify_otp_field("test@test.com","Null")
+     
+    def test_empty__otp_cannot_be_null(self):
+         with self.assertRaises(CopyException):
+              verify_otp_field("test@test.com","null")
+
+    def test_empty__otp_cannot_be_null(self):
+         with self.assertRaises(CopyException):
+              verify_otp_field("test@test.com","null")
+
+    def test_empty__otp_cannot_be_empty(self):
+         with self.assertRaises(CopyException):
+              verify_otp_field("test@test.com"," ")
+     
+    def test_not_empty_otp_email_field(self):
+         try:
+              verify_otp_field("test@test.com","123456")
+         except CopyException as e:
+              self.fail(e.message)
+              
+         
+     
+
+
     
     

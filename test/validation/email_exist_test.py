@@ -1,6 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 from app.validation.validate_email_address import check_if_email_address_exist, CopyException
+from app.constant.error_message import email_address_exist
 
 class TestEmailCheck(TestCase):
 
@@ -11,7 +12,7 @@ class TestEmailCheck(TestCase):
         with self.assertRaises(CopyException) as context:
             check_if_email_address_exist('test@email.com')
 
-        self.assertEqual(context.exception.message, 'email address exist.')
+        self.assertEqual(context.exception.message, email_address_exist)
         self.assertEqual(context.exception.code, 409)
 
     @patch('app.validation.validate_email_address.get_user_by_email_address')
