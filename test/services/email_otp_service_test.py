@@ -267,8 +267,95 @@ class EmailOtpServiceTest(TestCase):
     @patch("app.services.email_otp_service.EmailOTPService.send_and_store_otp")
     @patch("app.services.email_otp_service.validate_email_not_empty")
     @patch("app.services.email_otp_service.validate_email")
-    def test_resend_otp(self,mock_db,mock_send_otp,mock_validate_email_not_empty,mock_validate_email):
-        pass
+    def test_resend_otp(self, mock_validate_email, mock_validate_email_not_empty, mock_send_otp, mock_get_user_by_email):
+        data = {"email_address": "test234@gmail.com"}
+        mock_validate_email.return_value = None
+        mock_validate_email_not_empty.return_value = None
+
+        mock_user = MagicMock()
+        mock_user = {"email_address": "test234@gmail.com", "is_verified": False}
+        mock_get_user_by_email.return_value = mock_user
+
+        mock_send_otp.return_value = None
+
+        EmailOTPService.resend_otp(data)
+
+        mock_validate_email.assert_called_once_with(data["email_address"])
+        mock_validate_email_not_empty.assert_called_once_with(data["email_address"])
+        mock_send_otp.assert_called_once_with(data["email_address"])
+    
+
+    @patch("app.services.email_otp_service.get_user_by_email_address")
+    @patch("app.services.email_otp_service.EmailOTPService.send_and_store_otp")
+    @patch("app.services.email_otp_service.validate_email_not_empty")
+    @patch("app.services.email_otp_service.validate_email")
+    def test_resend_otp_to_a_verified_email_will_fail(self, mock_validate_email, mock_validate_email_not_empty, mock_send_otp, mock_get_user_by_email):
+        data = {"email_address": "test234@gmail.com"}
+        mock_validate_email.return_value = None
+        mock_validate_email_not_empty.return_value = None
+
+        mock_user = MagicMock()
+        mock_user = {"email_address": "test234@gmail.com", "is_verified": True}
+        mock_get_user_by_email.return_value = mock_user
+
+        mock_send_otp.return_value = None
+
+        with self.assertRaises(CopyException):
+             EmailOTPService.resend_otp(data)
+    
+
+    @patch("app.services.email_otp_service.validate_email_not_empty")
+    def test_resend_otp_without_providing_email_without_providing_email(self, mock_validate_email_not_empty):
+        data = {"email_address": ""}
+     
+        mock_validate_email_not_empty.return_value = None
+
+        with self.assertRaises(CopyException):
+             EmailOTPService.resend_otp(data)
+    
+
+
+    @patch("app.services.email_otp_service.validate_email")
+    def test_resend_otp_without_providing_email_key_and_value(self, mock_validate_email_not_empty):
+        data = {}
+        mock_validate_email_not_empty.return_value = None
+
+        with self.assertRaises(CopyException):
+             EmailOTPService.resend_otp(data)
+    
+        
+
+    @patch("app.services.email_otp_service.validate_email_not_empty")
+    def test_resend_otp_with_null_email(self, mock_validate_email_not_empty):
+        data = {"email_address" : "null"}
+        mock_validate_email_not_empty.return_value = None
+
+        with self.assertRaises(CopyException):
+             EmailOTPService.resend_otp(data)
+    
+
+    @patch("app.services.email_otp_service.validate_email_not_empty")
+    def test_resend_otp_with_Null_email(self, mock_validate_email_not_empty):
+        data = {"email_address" : "Null"}
+        mock_validate_email_not_empty.return_value = None
+
+        with self.assertRaises(CopyException):
+             EmailOTPService.resend_otp(data)
+
+    @patch("app.services.email_otp_service.get_user_by_email_address")
+    @patch("app.services.email_otp_service.validate_email_not_empty")
+    @patch("app.services.email_otp_service.validate_email")
+    def test_resend_otp_without_the_correct_email_address_pattern(
+        self, mock_validate_email, mock_validate_email_not_empty, mock_get_user
+    ):
+        data = {"email_address": "test234gmail.com"}
+        mock_validate_email.return_value = None
+        mock_validate_email_not_empty.return_value = None
+        mock_get_user.return_value = None  
+
+        with self.assertRaises(CopyException):
+            EmailOTPService.resend_otp(data)
+
 
 
 
