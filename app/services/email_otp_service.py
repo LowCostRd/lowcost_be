@@ -62,7 +62,6 @@ class EmailOTPService:
     @classmethod
     def verify_otp(cls, email: str, otp: str) -> bool:
         record = find_otp_by_otp_and_email(email,otp)
-        print(record)
 
         if not record:
             return False
@@ -75,7 +74,7 @@ class EmailOTPService:
         return True
     
     @classmethod
-    def check_if_otp_is_verify_and_update_user_is_verified(self,data:dict):
+    def check_if_otp_is_verify_and_update_user_is_verified(cls,data:dict):
      email = data.get("email_address")
      otp = data.get("otp")
 
@@ -92,6 +91,7 @@ class EmailOTPService:
         email_address = data.get("email_address")
     
         validate_email_not_empty(email_address)
+        validate_email(email_address)
 
         user = get_user_by_email_address(email_address)
 
