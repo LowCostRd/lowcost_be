@@ -37,9 +37,24 @@ def verify_otp_field(email,otp):
     if not email or not otp or not email.strip() or not otp.strip() or email.strip().lower() == "null" or otp.lower() == "null":
         raise CopyException(email_and_otp_required,400)
 
-          
-          
+
+def validate_practice_field(data: dict):
+    required_fields = ['user_id', 'name', 'number', 'country', 'state']
+
+    missing_fields = [field for field in required_fields if not data.get(field) or not str(data[field]).strip() or str(data[field]).strip().lower() == "null"]
+    
+    if missing_fields:
+       raise CopyException(required_field["required_field"](missing_fields[0]),400)
+    
+    validate_number(data.get("number"))
+
      
 
+def validate_number(value):
+    if not value or not str(value).strip() or str(value).strip().lower() == "null":
+        raise CopyException("Number is required", 400)
+
+    if not str(value).isdigit():
+        raise CopyException("Number must be a valid numeric value", 400)
      
    

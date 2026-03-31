@@ -3,6 +3,7 @@ from venv import logger
 from app.exception.email_delivery_exception import EmailDeliveryException
 import logging
 import time
+from app.models.practice_identity import PracticeIdentity
 from app.utils.network_utils import has_internet_connection
 from app.exception.email_delivery_exception import EmailDeliveryException
 
@@ -17,12 +18,14 @@ from .. import mongo
 from ..validation.field_validation import *
 from ..constant.success_message import *
 from ..validation.validate_email_address import *
+from ..validation.validate_user import *
 from ..models.enum.user_role import UserRole
 from ..bycrypt import  hash_password
 from .email_otp_service import EmailOTPService
 
 
 class UserAuthenticationService(UserAuthentication):
+     
      def registration(self, data: dict) -> dict:
          email_address = data.get("email_address")
          password = data.get('password')
@@ -45,8 +48,36 @@ class UserAuthenticationService(UserAuthentication):
          mongo.db.users.insert_one(user.to_dict())
 
          self._attempt_send_otp(email_address)
-
     
+
+     def register_practice_identity(self, data: dict) -> dict:
+   
+         validate_practice_field(data)
+
+         user_id = data.get("user_id")
+         name = data.get("name")
+         number = data.get("number")
+         country = data.get("country")
+         logo = data.get("logo")
+         state = data.get("state")
+
+  
+         check_if_user_exist(user_id)
+
+         practice_identity = PracticeIdentity(
+            user_id=user_id,
+            name=name,
+            number=number,
+            country=country,
+            logo=logo,
+            state=state
+           )
+
+  
+         mongo.db.practice_identities.insert_one(practice_identity.to_dict())
+
+   
+   
 
      def _attempt_send_otp(self, email_address: str) -> None:
        for attempt in range(1, MAX_RETRIES + 1):
@@ -57,14 +88,15 @@ class UserAuthenticationService(UserAuthentication):
 
         try:
             EmailOTPService.send_and_store_otp(email_address)
-            return  # ✅ success, exit early
+            return 
         except Exception as e:
             logger.error(f"OTP send failed for {email_address} on attempt {attempt}/{MAX_RETRIES}: {e}")
             if attempt < MAX_RETRIES:
                 time.sleep(RETRY_DELAY)
 
-    # All retries exhausted
+  
        raise EmailDeliveryException(email_address)
+    
 
 
 

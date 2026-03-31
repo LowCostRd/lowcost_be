@@ -16,6 +16,12 @@ def register_user():
 
 
 
+@auth_bp.route('/register_practice_identity',methods=['POST'])
+def register_practice_identity():
+    data = request.get_json()
+    user_service.register_practice_identity(data)
+    json_response =  build_response(practice_identity_registration_message,201)
+    return jsonify(json_response), 201
 
 
     
