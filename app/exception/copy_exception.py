@@ -1,7 +1,7 @@
 from datetime import datetime
 
 class CopyException(Exception):
-    def __init__(self, message:str, code:int):
+    def __init__(self, message:str, code: int = 400):
         super().__init__(message)
         self.success = False
         self.message = message

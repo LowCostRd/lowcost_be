@@ -26,7 +26,7 @@ class TestValidation(TestCase):
 
 
     def test_valid_role(self):
-         data = {"role":"personal"}
+         data = {"role":"chief executive officer"}
 
          try :
               validate_user_role(data)
@@ -97,7 +97,7 @@ class TestValidation(TestCase):
 
 
     def test_field_wont_fail_if_value(self):
-        required_fields = {'first_name' : "testing first name", 'last_name' : "testing last name", 'email_address' : "test@email.com", 'phone_number' : "090345678", 'password' : "pass@2490", 'role' : "personal"}
+        required_fields = {'full_name' : "testing full name", 'email_address' : "test@email.com", 'password' : "pass@2490", 'role' : "other"}
         
         try:
              validate_registration_field(required_fields)

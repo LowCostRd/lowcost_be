@@ -4,13 +4,10 @@ def insert_users():
     users = mongo.db.users
     if users.count_documents({}) == 0:
         default_user = {
-            "first_name": "default first name",
-            "last_name": "default last name",
+            "full_name": "default full name",
             "email_address": "default1@gmail.com",
-            "phone_number": "090789393",
             "password": "default@2025",
-            "role": "personal",
-            "organization_name": "default organization name"
+            "role": "medical director",
         }
         users.insert_one(default_user)
         print("Seeded default user.")

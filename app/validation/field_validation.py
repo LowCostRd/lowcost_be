@@ -1,12 +1,12 @@
 import os
 import re
 from ..exception.copy_exception import CopyException
-from ..models.enum.user_role import UserRole
+from ..models.enum.job_title import JobTitle
 from ..constant.error_message import *
 from dotenv import load_dotenv
 
 def validate_registration_field(data: dict):
-    required_fields = ['first_name', 'last_name', 'email_address', 'phone_number', 'password', 'role']
+    required_fields = ['full_name', 'email_address', 'password', 'role']
 
     missing_fields = [field for field in required_fields if not data.get(field) or not str(data[field]).strip() or str(data[field]).strip().lower() == "null"]
     
@@ -15,7 +15,7 @@ def validate_registration_field(data: dict):
 
 def validate_user_role(data:dict):
      try:
-            role = UserRole(data["role"].lower())
+            role = JobTitle(data["role"].lower())
             return role
      except ValueError:
             raise CopyException(role_not_valid,400)

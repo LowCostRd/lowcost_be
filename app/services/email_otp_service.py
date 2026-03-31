@@ -104,6 +104,7 @@ class EmailOTPService:
        
         else:
             raise CopyException(user_is_verified,409)
+            
         
 
          
