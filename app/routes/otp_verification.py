@@ -16,7 +16,7 @@ def verify_user_otp():
     json_response =  build_response(otp_verification_message,200)
     return jsonify(json_response),200
 
-@email_verification_bp.route("/resend_otp",methods=['POST'])
+@email_verification_bp.route("/resend_otp",methods=['PATCH'])
 def resend_otp():
     data = request.get_json()
     response = email_otp_service.resend_otp(data)
