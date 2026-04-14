@@ -9,51 +9,44 @@ from dotenv import load_dotenv
 import os
 import logging
 from pymongo import ASCENDING  
-
 def create_app():
     app = Flask(__name__)
-    logger = logging.getLogger(__name__)
-    load_dotenv()
-  
-    app.config["MONGO_URI"] = os.getenv("MONGO_URI")
-    app.config["MONGO_POOL_SIZE"] = os.getenv("MONGO_POOL_SIZE")
-    app.config["MONGO_MAX_POOL_SIZE"] = os.getenv("MONGO_MAX_POOL_SIZE")
+    
+    # Load env vars (safe for both local and Render)
+    load_dotenv()  
+    
+    # Critical: Use Render's $PORT, fallback for local
+    port = int(os.getenv("PORT", 5000))
+    
+    # Mongo config
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri:
+        raise RuntimeError("MONGO_URI environment variable is not set!")
+    
+    app.config["MONGO_URI"] = mongo_uri
+    app.config["MONGO_POOL_SIZE"] = int(os.getenv("MONGO_POOL_SIZE", 100))
+    app.config["MONGO_MAX_POOL_SIZE"] = int(os.getenv("MONGO_MAX_POOL_SIZE", 100))
 
     mongo.init_app(app)
 
-    # === TTL index creation ===
-    with app.app_context():
-        indexes = mongo.db.otp_verifications.index_information()
-        if 'expires_at_1' not in indexes:
-            mongo.db.otp_verifications.create_index(
-                [("expires_at", ASCENDING)],
-                expireAfterSeconds=0
-            )
-            print("TTL index created on otp_verifications.expires_at")
+    # TTL index (move inside try/except to avoid startup crash)
+    try:
+        with app.app_context():
+            indexes = mongo.db.otp_verifications.index_information()
+            if 'expires_at_1' not in indexes:
+                mongo.db.otp_verifications.create_index(
+                    [("expires_at", ASCENDING)],
+                    expireAfterSeconds=0
+                )
+                print(" TTL index created on otp_verifications.expires_at")
+    except Exception as e:
+        print(f" Could not create TTL index (maybe collection doesn't exist yet): {e}")
 
+    # Register routes
     from .routes import register_routes
     register_routes(app)
 
-    @app.errorhandler(CopyException)
-    def handle_copy_exception(error):
-        return jsonify(error.to_dict()), error.code
-    
-    @app.errorhandler(EmailDeliveryException)
-    def handle_email_delivery_exception(error):
-      return jsonify(error.to_dict()), 201 
+    # Your error handlers here...
 
-    
-    @app.errorhandler(Exception)
-    def handle_generic_exception(error):
-        logger.error(f"Unhandled exception: {str(error)}", exc_info=True)
-        return jsonify({
-            "success": False,
-            "message": "An unexpected error occurred. Please try again later.",
-            "status_code": 500,
-            "timestamp": datetime.now().isoformat()
-        }), 500
-    
-
+    print(f"🚀 App created and ready to bind on 0.0.0.0:{port}")
     return app
-
-    
