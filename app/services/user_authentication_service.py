@@ -7,6 +7,8 @@ from app.models.practice_identity import PracticeIdentity
 from app.utils.network_utils import has_internet_connection
 from app.exception.email_delivery_exception import EmailDeliveryException
 
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MAX_RETRIES = 3
@@ -46,12 +48,11 @@ class UserAuthenticationService(UserAuthentication):
          data["password"] = hashed_password
          user = User(**data)
 
-         print("Incoming data:", data)
-         print("Email:", email_address)
+
          mongo.db.users.insert_one(user.to_dict())
         
 
-        #  self._attempt_send_otp(email_address)
+         self._attempt_send_otp(email_address)
     
 
      def register_practice_identity(self, data: dict) -> dict:
