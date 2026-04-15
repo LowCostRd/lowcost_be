@@ -95,7 +95,7 @@ def validate_practice_details_field(data: dict):
 
 def validate_agreement_field(data: dict):
     required_fields = ['user_id', 'business_associate_agreement', 'terms_of_service', 'data_processing_agreement', 'practice_information_accuracy']
-    required_agreement_fields = ['business_associate_agreement', 'terms_of_service', 'data_processing_agreement']
+    required_agreement_fields = ['business_associate_agreement', 'terms_of_service', 'data_processing_agreement','practice_information_accuracy']
 
     missing_fields = [field for field in required_fields if field not in data]
     
