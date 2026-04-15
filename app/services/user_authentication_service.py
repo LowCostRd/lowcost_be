@@ -45,7 +45,11 @@ class UserAuthenticationService(UserAuthentication):
          data["role"] = role
          data["password"] = hashed_password
          user = User(**data)
+
+         print("Incoming data:", data)
+         print("Email:", email_address)
          mongo.db.users.insert_one(user.to_dict())
+        
 
         #  self._attempt_send_otp(email_address)
     
