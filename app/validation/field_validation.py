@@ -1,5 +1,7 @@
 import os
 import re
+
+from app.models.enum.number_of_practitioners import NumberOfPractitioners
 from ..exception.copy_exception import CopyException
 from ..models.enum.job_title import JobTitle
 from ..constant.error_message import *
@@ -54,7 +56,57 @@ def validate_number(value):
     if not value or not str(value).strip() or str(value).strip().lower() == "null":
         raise CopyException("Number is required", 400)
 
-    if not str(value).isdigit():
+    cleaned = str(value).strip()
+    
+    number_to_check = cleaned[1:] if cleaned.startswith("+") else cleaned
+    
+    if not number_to_check.isdigit():
         raise CopyException("Number must be a valid numeric value", 400)
+    
+    if len(cleaned) < 7 or len(cleaned) > 15:
+        raise CopyException("Number must be between 7 and 15 digits", 400)
      
+
+def validate_number_of_practitioners(data:dict):
+     try:
+            number_of_practitioners = NumberOfPractitioners(data["number_of_practitioners"])
+            return number_of_practitioners
+     except ValueError:
+            raise CopyException(number_of_practitioners_not_valid,400)  
+
+
+def validate_practice_details_field(data: dict):
+    required_fields = ['user_id', 'main_phone_number', 'number_of_practitioners', 'insurance_plans']
+
+    missing_fields = [field for field in required_fields if not data.get(field) or not str(data[field]).strip() or str(data[field]).strip().lower() == "null"]
+    
+    if missing_fields:
+        raise CopyException(required_field["required_field"](missing_fields[0]), 400)
+
+    insurance_plans = data.get("insurance_plans")
+    if not isinstance(insurance_plans, list):
+        raise CopyException("insurance_plans must be a list", 400)
+    
+    if len(insurance_plans) == 0:
+        raise CopyException("insurance_plans cannot be empty", 400)
+
+    validate_number(data.get("main_phone_number"))
+
+
+def validate_agreement_field(data: dict):
+    required_fields = ['user_id', 'business_associate_agreement', 'terms_of_service', 'data_processing_agreement', 'practice_information_accuracy']
+    required_agreement_fields = ['business_associate_agreement', 'terms_of_service', 'data_processing_agreement']
+
+    missing_fields = [field for field in required_fields if field not in data]
+    
+    if missing_fields:
+        raise CopyException(required_field["required_field"](missing_fields[0]), 400)
+
+    for field in required_fields[1:]:
+        if not isinstance(data[field], bool):
+            raise CopyException(f"{field} must be a boolean value", 400)
+
    
+    for field in required_agreement_fields:
+        if not data[field]:
+            raise CopyException(f"{field} must be true", 400)

@@ -24,4 +24,18 @@ def register_practice_identity():
     return jsonify(json_response), 201
 
 
-    
+
+@auth_bp.route('/register_practice_details',methods=['POST'])
+def register_practice_details():
+    data = request.get_json()
+    user_service.register_practice_details(data)
+    json_response =  build_response(practice_details_registration_message,201)
+    return jsonify(json_response), 201
+
+
+@auth_bp.route('/register_compliance',methods=['POST'])
+def register_compliance():
+    data = request.get_json()
+    user_service.compliance_agreement(data)
+    json_response =  build_response(compliance_registration_message,201)
+    return jsonify(json_response), 201
