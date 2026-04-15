@@ -47,7 +47,7 @@ class UserAuthenticationService(UserAuthentication):
          user = User(**data)
          mongo.db.users.insert_one(user.to_dict())
 
-         self._attempt_send_otp(email_address)
+        #  self._attempt_send_otp(email_address)
     
 
      def register_practice_identity(self, data: dict) -> dict:
