@@ -41,8 +41,6 @@ def create_app():
             
     except Exception as e:
         logger.error(f"❌ MongoDB Connection Failed: {str(e)}")
-        # Do NOT raise here during production if you want the app to start
-        # (but keep it for now so you see the exact error in Render logs)
         raise
 
     # TTL index (move inside try/except to avoid startup crash)
@@ -54,11 +52,50 @@ def create_app():
                     [("expires_at", ASCENDING)],
                     expireAfterSeconds=0
                 )
-                print(" TTL index created on otp_verifications.expires_at")
+                print("✅ TTL index created on otp_verifications.expires_at")
     except Exception as e:
-        print(f" Could not create TTL index (maybe collection doesn't exist yet): {e}")
+        print(f"⚠️ Could not create TTL index (maybe collection doesn't exist yet): {e}")
 
-    # Register routes
+    # ─── Error Handlers ───────────────────────────────────────────────────────
+
+    @app.errorhandler(CopyException)
+    def handle_copy_exception(e: CopyException):
+        return jsonify(e.to_dict()), e.code
+
+    @app.errorhandler(EmailDeliveryException)
+    def handle_email_delivery_exception(e: EmailDeliveryException):
+        return jsonify(e.to_dict()), e.code
+
+    @app.errorhandler(404)
+    def handle_not_found(e):
+        return jsonify({
+            "success": False,
+            "error_message": "The requested resource was not found.",
+            "status_code": 404,
+            "time_stamp": datetime.now().isoformat()
+        }), 404
+
+    @app.errorhandler(405)
+    def handle_method_not_allowed(e):
+        return jsonify({
+            "success": False,
+            "error_message": "Method not allowed.",
+            "status_code": 405,
+            "time_stamp": datetime.now().isoformat()
+        }), 405
+
+    @app.errorhandler(500)
+    def handle_internal_server_error(e):
+        logger.error(f"Internal Server Error: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error_message": "An unexpected internal server error occurred.",
+            "status_code": 500,
+            "time_stamp": datetime.now().isoformat()
+        }), 500
+
+    # ─── Register Routes ──────────────────────────────────────────────────────
+
     from .routes import register_routes
     register_routes(app)
 
