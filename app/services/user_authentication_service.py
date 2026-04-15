@@ -3,6 +3,8 @@ from venv import logger
 from app.exception.email_delivery_exception import EmailDeliveryException
 import logging
 import time
+from app.models.compliance import Compliance
+from app.models.practice_details import PracticeDetails
 from app.models.practice_identity import PracticeIdentity
 from app.utils.network_utils import has_internet_connection
 from app.exception.email_delivery_exception import EmailDeliveryException
@@ -80,9 +82,58 @@ class UserAuthenticationService(UserAuthentication):
 
   
          mongo.db.practice_identities.insert_one(practice_identity.to_dict())
+    
+     def register_practice_details(self, data: dict) -> dict:
+   
+         validate_practice_details_field(data)
+         number_of_practitioners = validate_number_of_practitioners(data)
 
-   
-   
+         user_id = data.get("user_id")
+         main_phone_number = data.get("main_phone_number")
+         website = data.get("website")
+         data["number_of_practitioners"] = number_of_practitioners
+         insurance_plans = data.get("insurance_plans", [])
+
+
+         check_if_user_exist(user_id)
+
+         practice_details = PracticeDetails(
+             user_id=user_id,
+             main_phone_number=main_phone_number,
+             website=website,
+             number_of_practitioners=number_of_practitioners,
+             insurance_plans=insurance_plans
+         )
+
+         mongo.db.practice_details.insert_one(practice_details.to_dict())
+    
+    
+     def compliance_agreement(self, data: dict) -> dict:
+       validate_agreement_field(data)
+
+       user_id = data.get("user_id")
+       business_associate_agreement = data.get("business_associate_agreement")
+       terms_of_service = data.get("terms_of_service")
+       data_processing_agreement = data.get("data_processing_agreement")
+       practice_information_accuracy = data.get("practice_information_accuracy")
+
+       check_if_user_exist(user_id)
+
+       compliance = Compliance(
+           user_id=user_id,
+           business_associate_agreement=business_associate_agreement,
+           terms_of_service=terms_of_service,
+           data_processing_agreement=data_processing_agreement,
+           practice_information_accuracy=practice_information_accuracy
+           )
+        
+       mongo.db.compliance.insert_one(compliance.to_dict())
+
+
+      
+
+  
+
 
      def _attempt_send_otp(self, email_address: str) -> None:
        for attempt in range(1, MAX_RETRIES + 1):
@@ -101,6 +152,7 @@ class UserAuthenticationService(UserAuthentication):
 
   
        raise EmailDeliveryException(email_address)
+     
     
 
 

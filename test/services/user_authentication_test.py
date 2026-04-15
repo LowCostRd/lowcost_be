@@ -316,3 +316,189 @@ class UserAuthenticationTest(TestCase):
         self.assertEqual(context.exception.args[0], expected_message)
         self.assertEqual(context.exception.code, 400)
     
+    @patch("app.services.user_authentication_service.mongo")
+    @patch("app.services.user_authentication_service.check_if_user_exist")
+    @patch("app.services.user_authentication_service.validate_number_of_practitioners")
+    @patch("app.services.user_authentication_service.validate_practice_details_field")
+    def test_successful_register_practice_details(
+        self,
+        mock_validate_practice_details_field,
+        mock_validate_number_of_practitioners,
+        mock_check_if_user_exist,
+        mock_mongo,
+    ):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "67f2b4e8a1c9d23f4e5b6789",
+            "main_phone_number": "+2348012345678",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "6-15 Practitioners",
+            "insurance_plans": ["Blue Cross Blue Shield", "Aetna", "Cigna"],
+        }
+
+        mock_validate_number_of_practitioners.return_value = MagicMock(value="6-15 Practitioners")
+        mock_collection = MagicMock()
+        mock_mongo.db.practice_details = mock_collection
+
+        service.register_practice_details(data)
+
+        mock_validate_practice_details_field.assert_called_once_with(data)
+        mock_validate_number_of_practitioners.assert_called_once_with(data)
+        mock_check_if_user_exist.assert_called_once_with(data["user_id"])
+        mock_collection.insert_one.assert_called_once()
+
+    def test_empty_user_id_field(self):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "",
+            "main_phone_number": "+2348012345678",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "6-15 Practitioners",
+            "insurance_plans": ["Aetna"],
+        }
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], "user_id is required.")
+        self.assertEqual(context.exception.code, 400)
+
+    def test_empty_main_phone_number_field(self):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "67f2b4e8a1c9d23f4e5b6789",
+            "main_phone_number": "",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "6-15 Practitioners",
+            "insurance_plans": ["Aetna"],
+        }
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], "main_phone_number is required.")
+        self.assertEqual(context.exception.code, 400)
+
+    def test_invalid_main_phone_number_format(self):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "67f2b4e8a1c9d23f4e5b6789",
+            "main_phone_number": "abc123",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "6-15 Practitioners",
+            "insurance_plans": ["Aetna"],
+        }
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], "Number must be a valid numeric value")
+        self.assertEqual(context.exception.code, 400)
+
+    def test_empty_number_of_practitioners_field(self):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "67f2b4e8a1c9d23f4e5b6789",
+            "main_phone_number": "+2348012345678",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "",
+            "insurance_plans": ["Aetna"],
+        }
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], "number_of_practitioners is required.")
+        self.assertEqual(context.exception.code, 400)
+
+    def test_invalid_number_of_practitioners(self):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "67f2b4e8a1c9d23f4e5b6789",
+            "main_phone_number": "+2348012345678",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "invalid value",
+            "insurance_plans": ["Aetna"],
+        }
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], number_of_practitioners_not_valid)
+        self.assertEqual(context.exception.code, 400)
+
+    def test_empty_insurance_plans_field(self):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "67f2b4e8a1c9d23f4e5b6789",
+            "main_phone_number": "+2348012345678",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "6-15 Practitioners",
+            "insurance_plans": [],
+        }
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], "insurance_plans is required.")
+        self.assertEqual(context.exception.code, 400)
+
+    def test_insurance_plans_not_a_list(self):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "67f2b4e8a1c9d23f4e5b6789",
+            "main_phone_number": "+2348012345678",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "6-15 Practitioners",
+            "insurance_plans": "Aetna",
+        }
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], "insurance_plans must be a list")
+        self.assertEqual(context.exception.code, 400)
+
+    def test_null_number_of_practitioners_field(self):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "67f2b4e8a1c9d23f4e5b6789",
+            "main_phone_number": "+2348012345678",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "null",
+            "insurance_plans": ["Aetna"],
+        }
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], "number_of_practitioners is required.")
+        self.assertEqual(context.exception.code, 400)
+
+    @patch("app.services.user_authentication_service.check_if_user_exist")
+    @patch("app.services.user_authentication_service.validate_practice_details_field")
+    @patch("app.services.user_authentication_service.validate_number_of_practitioners")
+    def test_user_does_not_exist(
+        self,
+        mock_validate_number_of_practitioners,
+        mock_validate_practice_details_field,
+        mock_check_if_user_exist,
+    ):
+        service = UserAuthenticationService()
+        data = {
+            "user_id": "nonexistent_user_id",
+            "main_phone_number": "+2348012345678",
+            "website": "https://www.mypractice.com",
+            "number_of_practitioners": "6-15 Practitioners",
+            "insurance_plans": ["Aetna"],
+        }
+
+        mock_validate_number_of_practitioners.return_value = MagicMock(value="6-15 Practitioners")
+        mock_check_if_user_exist.side_effect = CopyException("User does not exist.", 404)
+
+        with self.assertRaises(CopyException) as context:
+            service.register_practice_details(data)
+
+        self.assertEqual(context.exception.args[0], "User does not exist.")
+        self.assertEqual(context.exception.code, 404)
+    
