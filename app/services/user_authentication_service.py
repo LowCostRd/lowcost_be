@@ -27,7 +27,7 @@ from .email_otp_service import EmailOTPService
 class UserAuthenticationService(UserAuthentication):
      
      def registration(self, data: dict) -> dict:
-         email_address = data.get("email_address")
+         email_address = data.get("email_address").strip().lower()
          password = data.get('password')
 
 
