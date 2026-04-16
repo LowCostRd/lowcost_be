@@ -7,7 +7,7 @@ from ..constant.success_message import *
 auth_bp = Blueprint('authentication', __name__)
 user_service = UserAuthenticationService()
 
-@auth_bp.route('/register',methods=['POST'])
+@auth_bp.route('/v1/api/register',methods=['POST'])
 def register_user():
     data = request.get_json()
     user_service.registration(data)
@@ -16,7 +16,7 @@ def register_user():
 
 
 
-@auth_bp.route('/register_practice_identity',methods=['POST'])
+@auth_bp.route('/v1/api/register_practice_identity',methods=['POST'])
 def register_practice_identity():
     data = request.get_json()
     user_service.register_practice_identity(data)
@@ -25,7 +25,7 @@ def register_practice_identity():
 
 
 
-@auth_bp.route('/register_practice_details',methods=['POST'])
+@auth_bp.route('/v1/ap1/register_practice_details',methods=['POST'])
 def register_practice_details():
     data = request.get_json()
     user_service.register_practice_details(data)
@@ -33,7 +33,7 @@ def register_practice_details():
     return jsonify(json_response), 201
 
 
-@auth_bp.route('/register_compliance',methods=['POST'])
+@auth_bp.route('/v1/api/register_compliance',methods=['POST'])
 def register_compliance():
     data = request.get_json()
     user_service.compliance_agreement(data)
