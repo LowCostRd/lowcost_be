@@ -6,7 +6,8 @@ from .extensions import mongo
 from dotenv import load_dotenv
 import os
 import logging
-from pymongo import ASCENDING  
+from pymongo import ASCENDING 
+from flask_cors import CORS 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,6 +29,14 @@ def create_app():
     app.config["MONGO_URI"] = mongo_uri
     app.config["MONGO_POOL_SIZE"] = int(os.getenv("MONGO_POOL_SIZE", 100))
     app.config["MONGO_MAX_POOL_SIZE"] = int(os.getenv("MONGO_MAX_POOL_SIZE", 100))
+    allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+    
+    CORS(app,
+        origins=allowed_origins,
+        supports_credentials=True,
+        allow_headers=["Content-Type", "Authorization"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    )
 
     mongo.init_app(app)
 
