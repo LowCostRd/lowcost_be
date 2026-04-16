@@ -1,5 +1,6 @@
 from abc import ABC,abstractmethod
 
+
 class UserAuthentication(ABC):
     @abstractmethod
     def registration(self,data:dict)-> dict:
@@ -15,4 +16,8 @@ class UserAuthentication(ABC):
 
     @abstractmethod
     def compliance_agreement(self,data:dict)-> dict:
+        pass
+    
+    @abstractmethod
+    def get_user_by_email_address(self, email_address: str) -> dict:
         pass

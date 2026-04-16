@@ -18,7 +18,6 @@ class User:
             "_id": self._id,
             "full_name": self.full_name,
             "email_address": self.email_address,
-            "password": self.password,
             "role" : self.role.value,
             "is_verified" : self.is_verified,
             "created_at": self.created_at,

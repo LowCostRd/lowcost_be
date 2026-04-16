@@ -26,6 +26,8 @@ from ..validation.validate_user import *
 from ..models.enum.user_role import UserRole
 from ..bycrypt import  hash_password
 from .email_otp_service import EmailOTPService
+from ..repository.user_repository import *
+
 
 
 class UserAuthenticationService(UserAuthentication):
@@ -128,11 +130,20 @@ class UserAuthenticationService(UserAuthentication):
            )
         
        mongo.db.compliance.insert_one(compliance.to_dict())
+    
+     def get_user_by_email_address(self, email_address: str) -> dict:
+     
+        if not email_address or not isinstance(email_address, str):
+            raise CopyException("Email address is required", 400)
 
+        validate_email(email_address)
 
-      
+        user = get_user_by_email_address(email_address)   
 
-  
+        if not user:
+            raise CopyException(user_not_found, 404)   
+
+        return user
 
 
      def _attempt_send_otp(self, email_address: str) -> None:
