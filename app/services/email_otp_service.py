@@ -56,6 +56,7 @@ class EmailOTPService:
     @classmethod
     def send_and_store_otp(cls, email: str):
         otp = cls.generate_otp()
+        delete_all_otps_by_email(email)
         cls.store_otp(email, otp)
         cls.send_otp_email(email, otp)
     
