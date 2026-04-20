@@ -41,10 +41,11 @@ def register_compliance():
     return jsonify(json_response), 201
 
 
-@auth_bp.route('/v1/api/users/by-email',methods=['GET'])
+@auth_bp.route('/v1/api/users/by-email', methods=['GET'])
 def get_user_by_email_address():
-    data = request.get_json()
-    email_address = data.get("email_address") if data else None
+    email_address = request.args.get("email_address")
+
     user = user_service.get_user_by_email_address(email_address)
-    json_response =  build_response(user, 200)
+    json_response = build_response(user, 200)
+
     return jsonify(json_response), 200
