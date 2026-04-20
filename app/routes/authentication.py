@@ -25,7 +25,7 @@ def register_practice_identity():
 
 
 
-@auth_bp.route('/v1/ap1/register_practice_details',methods=['POST'])
+@auth_bp.route('/v1/api/register_practice_details',methods=['POST'])
 def register_practice_details():
     data = request.get_json()
     user_service.register_practice_details(data)
