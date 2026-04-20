@@ -132,20 +132,20 @@ class UserAuthenticationService(UserAuthentication):
            )
         
        mongo.db.compliance.insert_one(compliance.to_dict())
+    
+     def get_user_by_email_address(self, email_address: str) -> dict:
+     
+        if not email_address or not isinstance(email_address, str):
+            raise CopyException("Email address is required", 400)
 
+        validate_email(email_address)
 
-        def get_user_by_email_address(self, email_address: str) -> dict:
-            if not email_address or not isinstance(email_address, str):
-                raise CopyException("Email address is required", 400)
+        user = get_user_by_email_address(email_address)   
 
-            validate_email(email_address)
+        if not user:
+            raise CopyException(user_not_found, 404)   
 
-            user = self.user_repository.get_user_by_email_address(email_address)
-
-            if not user:
-                raise CopyException(user_not_found, 404)
-
-            return user
+        return user
 
 
      def _attempt_send_otp(self, email_address: str) -> None:
