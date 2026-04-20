@@ -23,6 +23,7 @@ from ..validation.field_validation import *
 from ..constant.success_message import *
 from ..validation.validate_email_address import *
 from ..validation.validate_user import *
+from ..validation.validate_practise_identity import *
 from ..models.enum.user_role import UserRole
 from ..bycrypt import  hash_password
 from .email_otp_service import EmailOTPService
@@ -72,6 +73,7 @@ class UserAuthenticationService(UserAuthentication):
 
   
          check_if_user_exist(user_id)
+         check_if_practice_identity_exists(user_id)
 
          practice_identity = PracticeIdentity(
             user_id=user_id,
