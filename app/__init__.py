@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 import os
 import logging
 from pymongo import ASCENDING 
-from flask_cors import CORS 
+from flask_cors import CORS
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ def create_app():
         allow_headers=["Content-Type", "Authorization"],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"]
     )
+
 
     mongo.init_app(app)
 
