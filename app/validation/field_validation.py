@@ -6,6 +6,7 @@ from ..exception.copy_exception import CopyException
 from ..models.enum.job_title import JobTitle
 from ..constant.error_message import *
 from dotenv import load_dotenv
+from .. import mongo
 
 def validate_registration_field(data: dict):
     required_fields = ['full_name', 'email_address', 'password', 'role']
@@ -40,15 +41,24 @@ def verify_otp_field(email,otp):
         raise CopyException(email_and_otp_required,400)
 
 
+def validate_business_number(number: str, current_user_id: str):
+
+    existing_identity = mongo.db.practice_identities.find_one({"number": number})
+    
+    if existing_identity:
+        if existing_identity.get("user_id") != current_user_id:
+            raise CopyException(reg_number_exist, 409)
+
+
 def validate_practice_field(data: dict):
     required_fields = ['user_id', 'name', 'number', 'country', 'state']
 
     missing_fields = [field for field in required_fields if not data.get(field) or not str(data[field]).strip() or str(data[field]).strip().lower() == "null"]
     
     if missing_fields:
-       raise CopyException(required_field["required_field"](missing_fields[0]),400)
+       raise CopyException(required_field["required_field"](missing_fields[0]), 400)
     
-    validate_number(data.get("number"))
+    validate_business_number(data.get("number"), data.get("user_id"))
 
      
 
