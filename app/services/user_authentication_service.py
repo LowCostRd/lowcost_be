@@ -106,32 +106,34 @@ class UserAuthenticationService(UserAuthentication):
         )
 
 
-
-    
      def register_practice_details(self, data: dict) -> dict:
-   
-         validate_practice_details_field(data)
-         number_of_practitioners = validate_number_of_practitioners(data)
+            validate_practice_details_field(data)
+            user_id = data.get("user_id")
+            check_if_user_exist(user_id)
 
-         user_id = data.get("user_id")
-         main_phone_number = data.get("main_phone_number")
-         website = data.get("website")
-         data["number_of_practitioners"] = number_of_practitioners
-         insurance_plans = data.get("insurance_plans", [])
-
-
-         check_if_user_exist(user_id)
-
-         practice_details = PracticeDetails(
-             user_id=user_id,
-             main_phone_number=main_phone_number,
-             website=website,
-             number_of_practitioners=number_of_practitioners,
-             insurance_plans=insurance_plans
-         )
-
-         mongo.db.practice_details.insert_one(practice_details.to_dict())
     
+            existing = mongo.db.practice_details.find_one({"user_id": user_id})
+
+    
+            practitioners_enum = validate_number_of_practitioners(data)
+
+            practice_details = PracticeDetails(
+                user_id=user_id,
+                main_phone_number=data.get("main_phone_number"),
+                website=data.get("website"),
+                number_of_practitioners=practitioners_enum,
+                insurance_plans=data.get("insurance_plans", []),
+                _id=existing["_id"] if existing else None,
+                created_at=existing["created_at"] if existing else None
+            )
+
+            mongo.db.practice_details.update_one(
+                {"user_id": user_id},
+                {"$set": practice_details.to_dict()},
+                upsert=True
+            )
+            
+  
     
      def compliance_agreement(self, data: dict) -> dict:
        validate_agreement_field(data)
