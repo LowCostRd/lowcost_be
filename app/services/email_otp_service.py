@@ -81,7 +81,6 @@ class EmailOTPService:
 
      verify_otp_field(email,otp)
 
-
      is_verified = EmailOTPService.verify_otp(email, otp)
 
      if not is_verified:

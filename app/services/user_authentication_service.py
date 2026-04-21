@@ -78,30 +78,35 @@ class UserAuthenticationService(UserAuthentication):
 
      def register_practice_identity(self, data: dict) -> dict:
    
-         validate_practice_field(data)
+        validate_practice_field(data)
 
-         user_id = data.get("user_id")
-         name = data.get("name")
-         number = data.get("number")
-         country = data.get("country")
-         logo = data.get("logo")
-         state = data.get("state")
+        user_id = data.get("user_id")
+        check_if_user_exist(user_id)
 
-  
-         check_if_user_exist(user_id)
-         check_if_practice_identity_exists(user_id)
+       
+        existing = mongo.db.practice_identities.find_one({"user_id": user_id})
 
-         practice_identity = PracticeIdentity(
+
+        practice_identity = PracticeIdentity(
             user_id=user_id,
-            name=name,
-            number=number,
-            country=country,
-            logo=logo,
-            state=state
-           )
+            name=data.get("name"),
+            number=data.get("number"),
+            country=data.get("country"),
+            logo=data.get("logo"),
+            state=data.get("state"),
+            _id=existing["_id"] if existing else None,
+            created_at=existing["created_at"] if existing else None
+        )
 
-  
-         mongo.db.practice_identities.insert_one(practice_identity.to_dict())
+       
+        mongo.db.practice_identities.update_one(
+            {"user_id": user_id},
+            {"$set": practice_identity.to_dict()},
+            upsert=True
+        )
+
+
+
     
      def register_practice_details(self, data: dict) -> dict:
    
