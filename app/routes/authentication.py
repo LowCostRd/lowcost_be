@@ -49,3 +49,12 @@ def get_user_by_email_address():
     json_response = build_response(user, 200)
 
     return jsonify(json_response), 200
+
+@auth_bp.route('/v1/api/users/by-id', methods=['GET'])
+def get_user_by_id():
+    user_id = request.args.get("user_id")
+
+    user = user_service.get_user_by_id(user_id)
+    json_response = build_response(user, 200)
+
+    return jsonify(json_response), 200

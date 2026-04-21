@@ -146,6 +146,19 @@ class UserAuthenticationService(UserAuthentication):
             raise CopyException(user_not_found, 404)   
 
         return user
+    
+     def get_user_by_id(self, user_id: str) -> dict:
+     
+        if not user_id or not isinstance(user_id, str):
+            raise CopyException("User id is required", 400)
+
+
+        user = get_user_by_id(user_id)   
+
+        if not user:
+            raise CopyException(user_not_found, 404)   
+
+        return user
 
 
      def _attempt_send_otp(self, email_address: str) -> None:
