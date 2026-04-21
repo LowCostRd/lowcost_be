@@ -8,6 +8,7 @@ from app.models.practice_details import PracticeDetails
 from app.models.practice_identity import PracticeIdentity
 from app.utils.network_utils import has_internet_connection
 from app.exception.email_delivery_exception import EmailDeliveryException
+from datetime import datetime
 
 
 logging.basicConfig(level=logging.INFO)
@@ -34,30 +35,45 @@ from ..repository.user_repository import *
 class UserAuthenticationService(UserAuthentication):
      
      def registration(self, data: dict) -> dict:
-         email_address = data.get("email_address").strip().lower()
-         password = data.get('password')
+        email_address = data.get("email_address").strip().lower()
+        password = data.get('password')
 
+      
+        validate_registration_field(data)
+        role = validate_user_role(data)
+        validate_email(email_address)
+        validate_password(password)
 
-         validate_registration_field(data)
-         role = validate_user_role(data)
-  
-         
-         validate_email(email_address)
-         validate_password(password)
-         check_if_email_address_exist(email_address)
+       
+        existing_user_doc = mongo.db.users.find_one({"email_address": email_address})
 
-         hashed_password = hash_password(password)
-     
+        if existing_user_doc:
+            if existing_user_doc.get("is_verified"):
+                raise CopyException(account_exist, 404) 
 
-         data["role"] = role
-         data["password"] = hashed_password
-         user = User(**data)
+            hashed_password = hash_password(password)
+            mongo.db.users.update_one(
+                {"email_address": email_address},
+                {
+                    "$set": {
+                        "full_name": data.get("full_name"),
+                        "password": hashed_password,
+                        "role": role.value,
+                        "updated_at": datetime.now()
+                    }
+                }
+            )
+        else:
+            
+            hashed_password = hash_password(password)
+            data["role"] = role
+            data["password"] = hashed_password
+            
+            user = User(**data)
+            mongo.db.users.insert_one(user.to_dict())
 
-
-         mongo.db.users.insert_one(user.to_dict())
-        
-
-         self._attempt_send_otp(email_address)
+    
+        self._attempt_send_otp(email_address)
     
 
      def register_practice_identity(self, data: dict) -> dict:
