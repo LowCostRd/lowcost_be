@@ -80,7 +80,7 @@ def _create_indexes(app: Flask) -> None:
         ("token_blacklist",   "expires_at",    {"expireAfterSeconds": 0}),
         ("refresh_tokens",    "expires_at",    {"expireAfterSeconds": 0}),
         ("refresh_tokens",    "user_id",       {}),
-        ("users",             "email",         {"unique": True}),
+        ("users",             "email_address",         {"unique": True}),
     ]
     with app.app_context():
         for collection_name, field, kwargs in index_specs:
