@@ -120,3 +120,7 @@ def validate_agreement_field(data: dict):
     for field in required_agreement_fields:
         if not data[field]:
             raise CopyException(f"{field} must be true", 400)
+
+def validate_email_password(email: str, password: str):
+      if not email or not password:
+            raise CopyException("Email and password are required.", 400)
