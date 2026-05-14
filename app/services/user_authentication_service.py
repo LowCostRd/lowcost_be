@@ -38,7 +38,7 @@ class UserAuthenticationService(UserAuthentication):
         email_address = data.get("email_address").strip().lower()
         password = data.get('password')
 
-      
+        print("Incoming data keys:", data.keys()) 
         validate_registration_field(data)
         role = validate_user_role(data)
         validate_email(email_address)
