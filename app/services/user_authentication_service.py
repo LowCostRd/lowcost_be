@@ -49,7 +49,7 @@ class UserAuthenticationService(UserAuthentication):
 
         if existing_user_doc:
             if existing_user_doc.get("is_verified"):
-                raise CopyException(account_exist, 404) 
+                raise CopyException(account_exist, 409) 
 
             hashed_password = hash_password(password)
             mongo.db.users.update_one(

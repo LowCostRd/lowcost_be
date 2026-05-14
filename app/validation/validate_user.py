@@ -12,3 +12,10 @@ def check_if_user_exist(user_id : str):
     
     if not user.get("is_verified"):
         raise CopyException(user_is_not_verified, 400)
+
+def validate_user_login(user):
+     if not user:
+        raise CopyException((invalid_credentials, 401))
+    
+     if not user.get("is_verified", False): 
+            return _error(user_is_not_verified, 403)
