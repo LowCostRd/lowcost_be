@@ -105,6 +105,11 @@ class UserAuthenticationService(UserAuthentication):
             upsert=True
         )
 
+        mongo.db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"onboarding_step": "practice-details", "updated_at": datetime.now()}}
+        )
+
 
      def register_practice_details(self, data: dict) -> dict:
             validate_practice_details_field(data)
@@ -132,6 +137,11 @@ class UserAuthenticationService(UserAuthentication):
                 {"$set": practice_details.to_dict()},
                 upsert=True
             )
+
+            mongo.db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {"onboarding_step": "compliance-terms", "updated_at": datetime.now()}}
+            )
             
   
     
@@ -155,6 +165,11 @@ class UserAuthenticationService(UserAuthentication):
            )
         
        mongo.db.compliance.insert_one(compliance.to_dict())
+
+       mongo.db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"onboarding_step": "complete", "updated_at": datetime.now()}}
+        )
     
      def get_user_by_email_address(self, email_address: str) -> dict:
      
