@@ -88,6 +88,11 @@ class EmailOTPService:
     
      update_user_to_verified(email)
 
+     mongo.db.users.update_one(
+    {"email_address": email},
+    {"$set": {"onboarding_step": "practice-identity", "updated_at": datetime.now()}}
+      )
+
     @classmethod
     def resend_otp(cls, data)->str:
         email_address = data.get("email_address")
