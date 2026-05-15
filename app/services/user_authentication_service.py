@@ -106,7 +106,7 @@ class UserAuthenticationService(UserAuthentication):
         )
 
         mongo.db.users.update_one(
-        {"_id": ObjectId(user_id)},
+        {"_id": user_id},
         {"$set": {"onboarding_step": "practice-details", "updated_at": datetime.now()}}
         )
 
@@ -139,7 +139,7 @@ class UserAuthenticationService(UserAuthentication):
             )
 
             mongo.db.users.update_one(
-            {"_id": ObjectId(user_id)},
+            {"_id": user_id},
             {"$set": {"onboarding_step": "compliance-terms", "updated_at": datetime.now()}}
             )
             
@@ -167,9 +167,9 @@ class UserAuthenticationService(UserAuthentication):
        mongo.db.compliance.insert_one(compliance.to_dict())
 
        mongo.db.users.update_one(
-        {"_id": ObjectId(user_id)},
+        {"_id": user_id},
         {"$set": {"onboarding_step": "complete", "updated_at": datetime.now()}}
-        )
+       )
     
      def get_user_by_email_address(self, email_address: str) -> dict:
      
