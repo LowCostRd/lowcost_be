@@ -123,6 +123,7 @@ def login():
             "id":    user_id,
             "email": email,
             "roles": roles,
+            "onboarding_step": user.get("onboarding_step", "verify-email"),
         },
     }, 200))
     _set_refresh_cookie(response, refresh_token)
