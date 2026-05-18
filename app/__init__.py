@@ -24,7 +24,7 @@ def create_app():
  
     load_dotenv()
  
-    # ── Mongo config ──────────────────────────────────────────────────────────
+   
     mongo_uri = os.getenv("MONGO_URI")
     if not mongo_uri:
         raise RuntimeError("MONGO_URI environment variable is not set!")
@@ -33,7 +33,7 @@ def create_app():
     app.config["MONGO_POOL_SIZE"]     = int(os.getenv("MONGO_POOL_SIZE",     100))
     app.config["MONGO_MAX_POOL_SIZE"] = int(os.getenv("MONGO_MAX_POOL_SIZE", 100))
  
-    # ── CORS ──────────────────────────────────────────────────────────────────
+  
     allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
     CORS(
         app,
@@ -43,11 +43,11 @@ def create_app():
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     )
  
-    # ── Extensions ────────────────────────────────────────────────────────────
+
     mongo.init_app(app)
     limiter.init_app(app)
  
-    # ── Verify DB connection ──────────────────────────────────────────────────
+
     try:
         with app.app_context():
             mongo.cx.admin.command("ping")
@@ -56,13 +56,10 @@ def create_app():
         logger.error("❌ MongoDB Connection Failed: %s", str(e))
         raise
  
-    # ── Indexes ───────────────────────────────────────────────────────────────
+
     _create_indexes(app)
  
-    # ── Error handlers ────────────────────────────────────────────────────────
     _register_error_handlers(app)
- 
-    # ── Blueprints / Routes ───────────────────────────────────────────────────
  
     from .routes import register_routes
     register_routes(app)
@@ -71,7 +68,6 @@ def create_app():
     return app
 
  
-# ── helpers ───────────────────────────────────────────────────────────────────
  
 def _create_indexes(app: Flask) -> None:
     index_specs = [
@@ -81,6 +77,9 @@ def _create_indexes(app: Flask) -> None:
         ("refresh_tokens",    "expires_at",    {"expireAfterSeconds": 0}),
         ("refresh_tokens",    "user_id",       {}),
         ("users",             "email_address",         {"unique": True}),
+
+        ("agents",            "agent_id",      {"unique": True}), 
+        ("agents",            "user_id",       {}),   
     ]
     with app.app_context():
         for collection_name, field, kwargs in index_specs:
