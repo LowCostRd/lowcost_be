@@ -71,3 +71,14 @@ def delete_agent(agent_id: str):
     result = elevenlabs_service.delete_agent(agent_id=agent_id, user_id=user_id)
     json_response = build_response(result, 200)
     return jsonify(json_response), 200
+
+
+@agent_bp.route("/v1/api/agents/voices/preview", methods=["POST"])
+@require_auth
+@limiter.limit("20 per minute")
+def preview_voice():
+    data = request.get_json()
+    result = elevenlabs_service.preview_voice(data=data)
+    json_response = build_response(result, 200)
+    return jsonify(json_response), 200
+
