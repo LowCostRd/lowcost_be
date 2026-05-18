@@ -219,6 +219,42 @@ class ElevenLabsService:
         logger.info("deleted_count=%d", result.deleted_count)
 
         return {"message": "Agent deleted successfully"}
+
+    def preview_voice(self, data: dict) -> dict:
+        voice_id = (data.get("voice_id") or "").strip()
+        hospital_name = (data.get("hospital_name") or "Your Hospital").strip()
+
+        if not voice_id:
+            raise CopyException(voice_id_required, 400)
+
+        text = (
+            f"Thank you for calling {hospital_name}. "
+            "I'm here to help you book or manage your appointment. "
+            "How can I help you today?"
+        )
+
+        res = requests.post(
+            f"{ELEVENLABS_BASE_URL}/text-to-speech/{voice_id}",
+            headers=self.headers,
+            json={
+                "text": text,
+                "model_id": "eleven_turbo_v2",
+            },
+        )
+
+        if res.status_code != 200:
+            logger.error("ElevenLabs preview_voice failed: %s", res.text)
+            raise CopyException("Failed to generate voice preview", res.status_code)
+
+        import base64
+        audio_base64 = base64.b64encode(res.content).decode("utf-8")
+
+        return {
+            "voice_id": voice_id,
+            "hospital_name": hospital_name,
+            "audio_base64": audio_base64,
+            "content_type": "audio/mpeg",
+        }
    
     def _verify_agent_ownership(self, agent_id: str, user_id: str) -> None:
         record = mongo.db.agents.find_one(
