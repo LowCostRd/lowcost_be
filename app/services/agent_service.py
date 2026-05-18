@@ -196,7 +196,29 @@ class ElevenLabsService:
             {"_id": 0},  
         )
         return list(agents)
+    
+    def delete_agent(self, agent_id: str, user_id: str) -> dict:
+        logger.info("Attempting delete — agent_id=%s, user_id=%s", agent_id, user_id)
+        self._verify_agent_ownership(agent_id, user_id)
 
+        res = requests.delete(
+            f"{ELEVENLABS_BASE_URL}/convai/agents/{agent_id}",
+            headers=self.headers,
+        )
+
+        if res.status_code not in (200, 204):
+            logger.error("ElevenLabs delete_agent failed: %s", res.text)
+            error_message = "Failed to delete agent"
+            try:
+                error_message = res.json().get("detail", error_message)
+            except Exception:
+                pass
+            raise CopyException(error_message, res.status_code)
+
+        result = mongo.db.agents.delete_one({"agent_id": agent_id})
+        logger.info("deleted_count=%d", result.deleted_count)
+
+        return {"message": "Agent deleted successfully"}
    
     def _verify_agent_ownership(self, agent_id: str, user_id: str) -> None:
         record = mongo.db.agents.find_one(
