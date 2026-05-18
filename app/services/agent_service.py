@@ -46,7 +46,7 @@ class ElevenLabsService:
                     "language": "en",
                     "prompt": {
                         "prompt": BASE_PROMPT.strip(),
-                        "llm": "qwen3.5-397b-a17b",
+                        "llm": "qwen35-397b-a17b",
                     },
                 }
             },
