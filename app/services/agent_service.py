@@ -46,7 +46,7 @@ class ElevenLabsService:
                     "language": "en",
                     "prompt": {
                         "prompt": BASE_PROMPT.strip(),
-                        "llm": "gemini-2.0-flash",
+                        "llm": "qwen3.5-397b-a17b",
                     },
                 }
             },
