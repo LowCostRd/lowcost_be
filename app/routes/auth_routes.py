@@ -62,9 +62,7 @@ def _success(data: dict, code: int = 200):
 def login():
     body = request.get_json(silent=True) or {}
     email    = (body.get("email") or "").strip().lower()
-    password =  body.get("password") or ""
-
-    
+    password =  body.get("password") or "" 
  
     if not email or not password:
         return _error("Email and password are required.", 400)
@@ -94,7 +92,7 @@ def login():
         )
         return _error("Invalid email or password.", 401)
  
-    # Reset failed attempts on success
+
     mongo.db.users.update_one(
         {"_id": user["_id"]},
         {
@@ -105,14 +103,14 @@ def login():
         },
     )
  
-    # Issue tokens 
+ 
     user_id = str(user["_id"])
     roles   = user.get("roles", ["user"])
  
     access_token  = create_access_token(user_id, email, roles)
     refresh_token = create_refresh_token(user_id)
  
-    # Persist refresh token reference (enables logout-all)
+
     _store_refresh_token(user_id, refresh_token)
  
     response = make_response(_success({
@@ -130,7 +128,6 @@ def login():
     return response
  
  
-# POST /auth/refresh
  
 @token_bp.route("/refresh", methods=["POST"])
 @limiter.limit("30 per minute")
@@ -154,30 +151,29 @@ def refresh():
     old_jti = payload["jti"]
     old_exp = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
  
-    # ── Validate token still exists in DB (not already rotated away) ──────────
     stored = mongo.db.refresh_tokens.find_one({"jti": old_jti, "user_id": user_id})
     if not stored:
-        # Possible token reuse / theft — blacklist everything for this user
+        
         logger.warning("Refresh token reuse detected for user_id=%s. Revoking all.", user_id)
         _revoke_all_refresh_tokens(user_id)
         resp = make_response(_error("Token reuse detected. All sessions have been invalidated.", 401))
         _clear_refresh_cookie(resp)
         return resp
- 
-    # ── Fetch user (for current roles) ────────────────────────────────────────
-    from bson import ObjectId
-    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+
+    user = mongo.db.users.find_one({"_id": user_id})
+
     if not user or not user.get("is_active", True):
         return _error("User account not found or deactivated.", 403)
- 
-    # ── Rotate: blacklist old, issue new ──────────────────────────────────────
+
     blacklist_token(old_jti, old_exp)
     mongo.db.refresh_tokens.delete_one({"jti": old_jti})
- 
-    email  = user["email"]
-    roles  = user.get("roles", ["user"])
-    new_access  = create_access_token(user_id, email, roles)
+
+    email = user["email_address"]
+    roles = [user.get("role", "user")]
+
+    new_access = create_access_token(user_id, email, roles)
     new_refresh = create_refresh_token(user_id)
+
     _store_refresh_token(user_id, new_refresh)
  
     response = make_response(_success({
@@ -189,16 +185,14 @@ def refresh():
     return response
  
  
-# ── POST /auth/logout ─────────────────────────────────────────────────────────
  
 @token_bp.route("/logout", methods=["POST"])
 @require_auth
 def logout():
-    # Blacklist current access token
     exp = datetime.fromtimestamp(g.current_user["exp"], tz=timezone.utc)
     blacklist_token(g.current_user["jti"], exp)
  
-    # Invalidate the refresh token in cookie (if present)
+
     refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
     if refresh_token:
         try:
@@ -207,14 +201,13 @@ def logout():
             blacklist_token(payload["jti"], refresh_exp)
             mongo.db.refresh_tokens.delete_one({"jti": payload["jti"]})
         except Exception:
-            pass  # Already expired or invalid — that's fine
+            pass  
  
     response = make_response(_success({"message": "Logged out successfully."}))
     _clear_refresh_cookie(response)
     return response
  
  
-# ── POST /auth/logout-all ─────────────────────────────────────────────────────
  
 @token_bp.route("/logout-all", methods=["POST"])
 @require_auth
@@ -222,7 +215,6 @@ def logout_all():
     """Invalidates ALL refresh tokens for this user (all devices)."""
     user_id = g.current_user["sub"]
  
-    # Blacklist current access token
     exp = datetime.fromtimestamp(g.current_user["exp"], tz=timezone.utc)
     blacklist_token(g.current_user["jti"], exp)
  
@@ -233,7 +225,6 @@ def logout_all():
     return response
  
  
-# ── GET /auth/me ──────────────────────────────────────────────────────────────
 @token_bp.route("/me", methods=["GET"])
 @require_auth
 def me():
@@ -248,7 +239,6 @@ def me():
     return _success({"user": user})
  
  
-# ── Internal helpers ──────────────────────────────────────────────────────────
  
 def _store_refresh_token(user_id: str, token: str) -> None:
     """Persist refresh token JTI so we can rotate and revoke-all."""
