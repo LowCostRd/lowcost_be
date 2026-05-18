@@ -130,7 +130,7 @@ class ElevenLabsService:
         agent_config = {
             "prompt": {
                 "prompt": merged_prompt,
-                "llm": "gemini-2.0-flash",
+                "llm": "qwen35-397b-a17b",
             }
         }
         if first_message:
