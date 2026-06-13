@@ -113,6 +113,38 @@ class ElevenLabsService:
         )
 
         return {"success": True, "agent_id": agent_id}
+        
+    
+    def update_name(self, agent_id: str, data: dict, user_id: str) -> dict:
+    name = (data.get("name") or "").strip()
+    if not name:
+        raise CopyException(name_required, 400)
+
+    self._verify_agent_ownership(agent_id, user_id)
+
+    payload = {
+        "name": name
+    }
+
+    res = requests.patch(
+        f"{ELEVENLABS_BASE_URL}/convai/agents/{agent_id}",
+        headers=self.headers,
+        json=payload,
+    )
+
+    if res.status_code != 200:
+        logger.error("ElevenLabs update_name failed: %s", res.text)
+        raise CopyException(
+            res.json().get("detail", "Failed to update name"),
+            res.status_code,
+        )
+
+    mongo.db.agents.update_one(
+        {"agent_id": agent_id},
+        {"$set": {"name": name, "updated_at": datetime.now()}},
+    )
+
+    return {"success": True, "agent_id": agent_id}
 
 
     def update_roles(self, agent_id: str, data: dict, user_id: str) -> dict:
