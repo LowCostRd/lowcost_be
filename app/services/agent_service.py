@@ -145,6 +145,20 @@ class ElevenLabsService:
         )
 
         return {"success": True, "agent_id": agent_id}
+    
+    def update_specialty(self, agent_id: str, data: dict, user_id: str) -> dict:
+        specialty = (data.get("specialty") or "").strip()
+        if not specialty:
+            raise CopyException(specialty_required, 400)
+
+        self._verify_agent_ownership(agent_id, user_id)
+
+        mongo.db.agents.update_one(
+            {"agent_id": agent_id},
+            {"$set": {"specialty": specialty, "updated_at": datetime.now()}},
+        )
+
+        return {"success": True, "agent_id": agent_id}
 
 
     def update_roles(self, agent_id: str, data: dict, user_id: str) -> dict:
