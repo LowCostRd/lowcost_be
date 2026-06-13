@@ -82,3 +82,14 @@ def preview_voice():
     json_response = build_response(result, 200)
     return jsonify(json_response), 200
 
+
+@agent_bp.route("/v1/api/agents/<string:agent_id>/name", methods=["PATCH"])
+@require_auth
+@limiter.limit("20 per minute")
+def update_name(agent_id: str):
+    user_id = g.current_user["sub"]
+    data = request.get_json()
+    result = elevenlabs_service.update_name(agent_id=agent_id, data=data, user_id=user_id)
+    json_response = build_response(result, 200)
+    return jsonify(json_response), 200
+
