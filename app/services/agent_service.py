@@ -77,10 +77,14 @@ class ElevenLabsService:
         mongo.db.agents.insert_one(agent.to_dict())
 
         return {"agent_id": elevenlabs_agent_id}
+    
+    
 
    
     def update_voice(self, agent_id: str, data: dict, user_id: str) -> dict:
         voice_id = (data.get("voice_id") or "").strip()
+        image_url = (data.get("image_url") or "").strip()
+        
         if not voice_id:
             raise CopyException(voice_id_required, 400)
 
@@ -105,14 +109,19 @@ class ElevenLabsService:
                 res.json().get("detail", "Failed to update voice"),
                 res.status_code,
             )
+        
+        update_fields = {"voice_id": voice_id, "updated_at": datetime.now()}
 
-       
+        if image_url:
+            update_fields["image_url"] = image_url
+
         mongo.db.agents.update_one(
             {"agent_id": agent_id},
-            {"$set": {"voice_id": voice_id, "updated_at": datetime.now()}},
+            {"$set": update_fields},
         )
 
-        return {"success": True, "agent_id": agent_id}
+        return {"success": True, "agent_id": agent_id, "image_url": image_url}
+
 
     
     def update_name(self, agent_id: str, data: dict, user_id: str) -> dict:
