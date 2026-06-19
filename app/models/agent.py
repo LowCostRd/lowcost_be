@@ -10,6 +10,7 @@ class Agent:
         name: str,
         specialty: str = None,
         voice_id: str = None,
+        image_url: str = None,
         roles: list = None,
         _id=None,
         created_at=None,
@@ -19,7 +20,8 @@ class Agent:
         self.agent_id = agent_id       
         self.name = name
         self.specialty = specialty     
-        self.voice_id = voice_id        
+        self.voice_id = voice_id
+        self.image_url = image_url        
         self.roles = roles or []       
         self.created_at = created_at or datetime.now()
         self.updated_at = datetime.now()
@@ -32,6 +34,7 @@ class Agent:
             "name": self.name,
             "specialty": self.specialty,
             "voice_id": self.voice_id,
+            "image_url": self.image_url,
             "roles": self.roles,
             "created_at": self.created_at,
             "updated_at": self.updated_at,

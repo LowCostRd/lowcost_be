@@ -274,6 +274,39 @@ class ElevenLabsService:
         logger.info("deleted_count=%d", result.deleted_count)
 
         return {"message": "Agent deleted successfully"}
+    
+    def get_user_agents_filtered(self, user_id: str, filters: dict = None) -> list:
+        query = {"user_id": user_id}
+        filters = filters or {}
+
+        name = filters.get("name")
+        specialty = filters.get("specialty")
+        search = filters.get("search")
+        date_from = filters.get("date_from")
+        date_to = filters.get("date_to")
+
+        if name:
+            query["name"] = {"$regex": name, "$options": "i"}
+
+        if specialty:
+            query["specialty"] = {"$regex": specialty, "$options": "i"}
+
+        if search:
+            query["$or"] = [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"specialty": {"$regex": search, "$options": "i"}},
+            ]
+
+        if date_from or date_to:
+            date_query = {}
+            if date_from:
+                date_query["$gte"] = date_from
+            if date_to:
+                date_query["$lte"] = date_to
+            query["created_at"] = date_query
+
+        agents = mongo.db.agents.find(query, {"_id": 0}).sort("created_at", -1)
+        return list(agents)
 
     def preview_voice(self, data: dict) -> dict:
         voice_id = (data.get("voice_id") or "").strip()
