@@ -1,4 +1,8 @@
+import datetime
+
 from flask import Blueprint, request, jsonify, g
+
+from app.exception.copy_exception import CopyException
 
 from ..services.agent_service import ElevenLabsService
 from ..services.auth.decorators import require_auth
@@ -101,6 +105,32 @@ def update_specialty(agent_id: str):
     user_id = g.current_user["sub"]
     data = request.get_json()
     result = elevenlabs_service.update_specialty(agent_id=agent_id, data=data, user_id=user_id)
+    json_response = build_response(result, 200)
+    return jsonify(json_response), 200
+
+def _parse_date(value: str):
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        raise CopyException(f"Invalid date format: {value}. Use YYYY-MM-DD.", 400)
+
+
+@agent_bp.route("/v1/api/agents/list", methods=["GET"])
+@require_auth
+def list_agents():
+    user_id = g.current_user["sub"]
+
+    filters = {
+        "name": request.args.get("name"),
+        "specialty": request.args.get("specialty"),
+        "search": request.args.get("search"),
+        "date_from": _parse_date(request.args.get("date_from")),
+        "date_to": _parse_date(request.args.get("date_to")),
+    }
+
+    result = elevenlabs_service.get_user_agents_filtered(user_id=user_id, filters=filters)
     json_response = build_response(result, 200)
     return jsonify(json_response), 200
 
