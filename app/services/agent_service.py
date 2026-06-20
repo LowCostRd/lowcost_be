@@ -274,8 +274,8 @@ class ElevenLabsService:
         logger.info("deleted_count=%d", result.deleted_count)
 
         return {"message": "Agent deleted successfully"}
-    
-    def get_user_agents_filtered(self, user_id: str, filters: dict = None) -> list:
+        
+   def get_user_agents_filtered(self, user_id: str, filters: dict = None) -> list:
         query = {"user_id": user_id}
         filters = filters or {}
 
@@ -285,17 +285,39 @@ class ElevenLabsService:
         date_from = filters.get("date_from")
         date_to = filters.get("date_to")
 
+        and_clauses = []
+
         if name:
             query["name"] = {"$regex": name, "$options": "i"}
 
         if specialty:
-            query["specialty"] = {"$regex": specialty, "$options": "i"}
+            # `specialty` arrives as a list[str] from list_agents() (it splits the
+            # comma-separated query param before calling this method).
+            specialties = specialty if isinstance(specialty, list) else [specialty]
+
+            if len(specialties) == 1:
+                query["specialty"] = {"$regex": re.escape(specialties[0]), "$options": "i"}
+            else:
+                # Match ANY of the selected specialties (case-insensitive, partial match).
+                # Kept as its own $and clause (not query["$or"]) so it can't collide
+                # with the search $or below when both filters are applied together.
+                and_clauses.append({
+                    "$or": [
+                        {"specialty": {"$regex": re.escape(s), "$options": "i"}}
+                        for s in specialties
+                    ]
+                })
 
         if search:
-            query["$or"] = [
-                {"name": {"$regex": search, "$options": "i"}},
-                {"specialty": {"$regex": search, "$options": "i"}},
-            ]
+            and_clauses.append({
+                "$or": [
+                    {"name": {"$regex": search, "$options": "i"}},
+                    {"specialty": {"$regex": search, "$options": "i"}},
+                ]
+            })
+
+        if and_clauses:
+            query["$and"] = and_clauses
 
         if date_from or date_to:
             date_query = {}
