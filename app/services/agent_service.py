@@ -274,8 +274,8 @@ class ElevenLabsService:
         logger.info("deleted_count=%d", result.deleted_count)
 
         return {"message": "Agent deleted successfully"}
-        
-   def get_user_agents_filtered(self, user_id: str, filters: dict = None) -> list:
+
+    def get_user_agents_filtered(self, user_id: str, filters: dict = None) -> list:
         query = {"user_id": user_id}
         filters = filters or {}
 
