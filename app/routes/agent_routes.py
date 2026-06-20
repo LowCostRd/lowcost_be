@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from flask import Blueprint, request, jsonify, g
 
@@ -108,7 +108,16 @@ def update_specialty(agent_id: str):
     json_response = build_response(result, 200)
     return jsonify(json_response), 200
 
+
 def _parse_date(value: str):
+    """
+    Parses a 'YYYY-MM-DD' query param into a naive datetime at start-of-day.
+
+    Agent.created_at is stored via `datetime.now()` (naive, no tzinfo), so this
+    must ALSO return a naive datetime — comparing a naive Mongo date against a
+    tz-aware Python datetime can silently fail to match depending on the driver,
+    so no tzinfo is attached here.
+    """
     if not value:
         return None
     try:
@@ -117,20 +126,40 @@ def _parse_date(value: str):
         raise CopyException(f"Invalid date format: {value}. Use YYYY-MM-DD.", 400)
 
 
+def _parse_date_end(value: str):
+    """
+    Same as _parse_date but bumped to the last microsecond of that day, so a
+    'date_to' filter is inclusive of the entire end date rather than cutting
+    off at midnight.
+    """
+    dt = _parse_date(value)
+    if dt is None:
+        return None
+    return dt.replace(hour=23, minute=59, second=59, microsecond=999000)
+
+
 @agent_bp.route("/v1/api/agents/list", methods=["GET"])
 @require_auth
 def list_agents():
     user_id = g.current_user["sub"]
 
+    # Frontend sends specialties as a single comma-separated query param:
+    #   ?specialty=Dental,Pediatrics,Mental Health
+    raw_specialty = request.args.get("specialty")
+    specialty_list = (
+        [s.strip() for s in raw_specialty.split(",") if s.strip()]
+        if raw_specialty
+        else None
+    )
+
     filters = {
         "name": request.args.get("name"),
-        "specialty": request.args.get("specialty"),
+        "specialty": specialty_list,
         "search": request.args.get("search"),
         "date_from": _parse_date(request.args.get("date_from")),
-        "date_to": _parse_date(request.args.get("date_to")),
+        "date_to": _parse_date_end(request.args.get("date_to")),
     }
 
     result = elevenlabs_service.get_user_agents_filtered(user_id=user_id, filters=filters)
     json_response = build_response(result, 200)
     return jsonify(json_response), 200
-
