@@ -19,7 +19,7 @@ RETRY_DELAY = 2
 
 from ..interfaces.user_authentication import UserAuthentication
 from ..models.user import User
-from ..models.user import Waitlist
+from ..models.waitlist import Waitlist
 from .. import mongo
 from ..validation.field_validation import *
 from ..constant.success_message import *
