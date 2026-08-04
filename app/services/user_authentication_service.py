@@ -256,7 +256,7 @@ class UserAuthenticationService(UserAuthentication):
 
         validate_email(email_address)
 
-        check_if_email_address_exist(email_address)
+        check_if_email_exist(email_address)
 
         data["email_address"] = email_address
 

@@ -13,3 +13,7 @@ def update_user_to_verified(email:str):
 def get_user_by_id(user_id: str):
     user = mongo.db.users.find_one({"_id": user_id}, {"password": 0} )
     return user
+
+def get_user_by_email(email_address:str):
+    user = mongo.db.waitlist.find_one({"email_address": email_address})
+    return user
