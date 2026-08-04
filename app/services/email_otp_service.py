@@ -125,6 +125,8 @@ class EmailOTPService:
             with open("templates/waitlist_email_template.html", "r", encoding="utf-8") as file:
                 template = file.read()
 
+            current_year = str(datetime.now().year)
+
             html_content = (
                 template
                 .replace("{{ full_name }}", full_name)
@@ -132,6 +134,7 @@ class EmailOTPService:
                 .replace("{{ practice_name }}", practice_name)
                 .replace("{{ specialty }}", specialty)
                 .replace("{{ practice_size }}", practice_size)
+                .replace("{{ year }}", current_year)
             )
 
             message = Mail(
