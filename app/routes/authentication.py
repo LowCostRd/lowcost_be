@@ -58,3 +58,10 @@ def get_user_by_id():
     json_response = build_response(user, 200)
 
     return jsonify(json_response), 200
+
+@auth_bp.route('/v1/api/waitlist',methods=['POST'])
+def register_user():
+    data = request.get_json()
+    msg = user_service.waitlist_registration(data)
+    json_response =  build_response(waitlist_success_message,201)
+    return jsonify(json_response), 201

@@ -19,6 +19,7 @@ RETRY_DELAY = 2
 
 from ..interfaces.user_authentication import UserAuthentication
 from ..models.user import User
+from ..models.user import Waitlist
 from .. import mongo
 from ..validation.field_validation import *
 from ..constant.success_message import *
@@ -216,6 +217,59 @@ class UserAuthenticationService(UserAuthentication):
 
   
        raise EmailDeliveryException(email_address)
+    
+     def _attempt_send_waitlist_email(self, waitlist: Waitlist) -> None:
+        for attempt in range(1, MAX_RETRIES + 1):
+
+            if not has_internet_connection():
+                logger.warning(
+                    f"No internet connection. Attempt {attempt}/{MAX_RETRIES}. "
+                    f"Retrying in {RETRY_DELAY}s..."
+                )
+                time.sleep(RETRY_DELAY)
+                continue
+
+            try:
+                EmailOTPService.send_waitlist_email(
+                    to_email=waitlist.email_address,
+                    full_name=waitlist.name,
+                    role=waitlist.role,
+                    practice_name=waitlist.hospital_name,
+                    specialty=waitlist.specialty,
+                    practice_size=waitlist.number_of_practitioners.value,
+                )
+                return
+
+            except Exception as e:
+                logger.error(
+                    f"Waitlist confirmation failed for "
+                    f"{waitlist.email_address} "
+                    f"Attempt {attempt}/{MAX_RETRIES}: {e}"
+                )
+
+                if attempt < MAX_RETRIES:
+                    time.sleep(RETRY_DELAY)
+        
+     def waitlist_registration(self, data: dict) -> dict:
+
+        email_address = data.get("email_address").strip().lower()
+
+        validate_email(email_address)
+
+        check_if_email_address_exist(email_address)
+
+        data["email_address"] = email_address
+
+        waitlist = Waitlist(**data)
+
+        mongo.db.waitlist.insert_one(waitlist.to_dict())
+
+        self._attempt_send_waitlist_email(waitlist)
+
+        
+      
+            
+  
      
     
 
