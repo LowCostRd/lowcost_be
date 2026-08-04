@@ -260,20 +260,28 @@ class UserAuthenticationService(UserAuthentication):
 
         data["email_address"] = email_address
 
+        try:
+            data["number_of_practitioners"] = NumberOfPractitioners(
+                data["number_of_practitioners"]
+            )
+        except ValueError:
+            raise CopyException(
+                "Invalid number_of_practitioners value."
+            )
+
         waitlist = Waitlist(**data)
 
         mongo.db.waitlist.insert_one(waitlist.to_dict())
 
         self._attempt_send_waitlist_email(waitlist)
-
-        
-      
             
-  
-     
+        
+                
     
+        
+        
 
 
 
 
-         
+            
