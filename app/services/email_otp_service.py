@@ -111,8 +111,57 @@ class EmailOTPService:
        
         else:
             raise CopyException(user_is_verified,409)
-            
-        
+    
+    @classmethod
+    def send_waitlist_email(
+        cls,
+        to_email: str,
+        full_name: str,
+        role: str,
+        practice_name: str,
+        specialty: str,
+        practice_size: str,
+        ):
+            with open("templates/waitlist_email_template.html", "r", encoding="utf-8") as file:
+                template = file.read()
 
-         
+            html_content = (
+                template
+                .replace("{{ full_name }}", full_name)
+                .replace("{{ role }}", role)
+                .replace("{{ practice_name }}", practice_name)
+                .replace("{{ specialty }}", specialty)
+                .replace("{{ practice_size }}", practice_size)
+            )
+
+            message = Mail(
+                from_email=cls.FROM_EMAIL,
+                to_emails=to_email,
+                subject="🎉 You're on the Conversa Waitlist!",
+                html_content=html_content,
+            )
+
+            try:
+                load_dotenv()
+
+                sg = SendGridAPIClient(
+                    api_key=os.getenv("SENDGRID_API_KEY")
+                )
+
+                response = sg.send(message)
+
+                if response.status_code not in range(200, 300):
+                    raise CopyException(
+                        otp_failed_to_send,
+                        response.status_code,
+                    )
+
+            except Exception as e:
+                raise CopyException(
+                    email_failed_to_send_otp,
+                    getattr(e, "code", str(e)),
+                )
+                
+
+                
 
