@@ -5,3 +5,4 @@ practice_identity_registration_message = "Practice identity registered successfu
 practice_details_registration_message = "Practice details registered successfully"
 compliance_registration_message = "Compliance agreement registered successfully"
 delete_image_message = "Image deleted successfully"
+waitlist_success_message = "Successfully joined the waitlist."
