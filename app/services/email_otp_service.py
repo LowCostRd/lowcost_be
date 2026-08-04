@@ -140,7 +140,7 @@ class EmailOTPService:
             message = Mail(
                 from_email=cls.FROM_EMAIL,
                 to_emails=to_email,
-                subject="🎉 You're on the Conversa Waitlist!",
+                subject="🎉 You're on the SernioAi Waitlist!",
                 html_content=html_content,
             )
 
