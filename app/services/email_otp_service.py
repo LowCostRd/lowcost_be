@@ -2,7 +2,8 @@ import os
 import random
 from datetime import datetime, timedelta
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+
+from sendgrid.helpers.mail import Mail, Email
 
 from app.exception.copy_exception import CopyException
 from app.repository.user_repository import *
@@ -20,7 +21,7 @@ class EmailOTPService:
     load_dotenv()
     OTP_LENGTH = int(os.getenv('OTP_LENGTH'))
     OTP_EXPIRY_MINUTES = int(os.getenv('OTP_EXPIRY_MINUTES'))
-    FROM_EMAIL = os.getenv('FROM_EMAIL')
+    FROM_EMAIL = Email(email=os.getenv("FROM_EMAIL"),name=os.getenv("SENDGRID_FROM_NAME"))
 
     @classmethod
     def generate_otp(cls) -> str:
