@@ -136,6 +136,7 @@ class EmailOTPService:
                 .replace("{{ specialty }}", specialty)
                 .replace("{{ practice_size }}", practice_size)
                 .replace("{{ year }}", current_year)
+                .replace("{{ submitted_date }}", datetime.now().strftime("%b %d, %Y"))
             )
 
             message = Mail(

@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Welcome to the SernioAi Waitlist</title>
+    <title>Welcome to Sernio</title>
   </head>
 
   <body
     style="
       margin:0;
       padding:40px 20px;
-      background:#F7F8FC;
+      background:#F8F8FC;
       font-family:Arial, Helvetica, sans-serif;
       color:#1E2433;
     "
@@ -30,255 +30,321 @@
             cellspacing="0"
             border="0"
             width="600"
-            style="
-              max-width:600px;
-              background:#ffffff;
-              border-radius:20px;
-              overflow:hidden;
-              border:1px solid #ECEEF5;
-            "
+            style="max-width:600px;"
           >
 
-            <!-- Header -->
+            <!-- Logo -->
             <tr>
-              <td
-                align="center"
-                style="
-                  padding:48px 40px 24px;
-                  border-bottom:1px solid #F1F2F7;
-                "
-              >
-
-                <div
-                  style="
-                    width:72px;
-                    height:72px;
-                    background:#F3EEFF;
-                    border-radius:50%;
-                    line-height:72px;
-                    font-size:34px;
-                  "
-                >
-                  🩺
-                </div>
-
-                <h1
-                  style="
-                    margin:24px 0 12px;
-                    font-size:32px;
-                    font-weight:700;
-                    color:#222B45;
-                  "
-                >
-                  You're on the waitlist!
-                </h1>
-
-                <p
-                  style="
-                    margin:0;
-                    font-size:16px;
-                    line-height:28px;
-                    color:#5F6B84;
-                  "
-                >
-                  Thank you for joining the
-                  <strong>SernioAi</strong> waitlist.
-                  We've received your registration and you'll be among the
-                  first healthcare professionals to know when access becomes
-                  available.
-                </p>
-
+              <td align="center" style="padding:0 0 24px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding-right:10px;" valign="middle">
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td
+                          
+                         
+                          >&nbsp;</td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td valign="middle" >
+                      <img src="https://res.cloudinary.com/dlgnbezvh/image/upload/v1786699424/logo_6_jfvn6g.png" width="100" height="28" alt="Sernio" style="display:block; " />
+                    </td>
+                  </tr>
+                </table>
               </td>
             </tr>
 
-            <!-- Registration Details -->
+            <!-- Card -->
             <tr>
-              <td style="padding:36px 40px;">
+              <td
+                style="
+                  background:#ffffff;
+                  overflow:hidden;
+              
+                "
+              >
 
-                <h2
-                  style="
-                    margin:0 0 24px;
-                    font-size:20px;
-                    color:#222B45;
-                  "
-                >
-                  Your Registration Details
-                </h2>
-
-                <table
-                  role="presentation"
-                  width="100%"
-                  cellpadding="0"
-                  cellspacing="0"
-                  style="
-                    border:1px solid #ECEEF5;
-                    border-radius:14px;
-                  "
-                >
-
+                <!-- Header banner -->
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
                     <td
-                      style="
-                        padding:18px 24px;
-                        border-bottom:1px solid #ECEEF5;
-                        color:#7A8599;
-                      "
+                    
                     >
-                      Full Name
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="line-height:0; font-size:0;">
+                          <img
+                            src="https://res.cloudinary.com/dlgnbezvh/image/upload/v1786699598/Illustration_depi5e.png"
+                         
+                            alt="Welcome"
+                            style="display:block; width:100%; max-width:600px; height:auto;"
+                          />
+                        </td>
+                      </tr>
+                    </table>
                     </td>
+                  </tr>
+                </table>
 
-                    <td
-                      align="right"
-                      style="
-                        padding:18px 24px;
-                        border-bottom:1px solid #ECEEF5;
-                        font-weight:600;
-                      "
-                    >
-                      {{ full_name }}
+                <!-- Body -->
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding:36px 40px 8px;">
+                      <h1
+                        style="
+                          margin:0 0 20px;
+                          font-size:26px;
+                          font-weight:600;
+                          color:#121A26;
+                        "
+                      >
+                        Welcome to Sernio
+                      </h1>
+
+                      <p
+                        style="
+                          margin:0 0 8px;
+                          font-size:16px;
+                          line-height:26px;
+                          font-weight:600;
+                          color:#384860;
+                        "
+                      >
+                        Hello {{ full_name }},
+                      </p>
+
+                      <p
+                        style="
+                          margin:0 0 28px;
+                          font-size:16px;
+                          line-height:26px;
+                          font-weight:600;
+                          color:#384860;
+                        "
+                      >
+                        Thanks for putting <strong style="color:#222B45;">{{ practice_name }}</strong>
+                        on the list. We're opening access practice by practice, and we'll reach out
+                        personally when your cohort is ready.
+                      </p>
                     </td>
                   </tr>
 
+                  <!-- Registration Details -->
                   <tr>
-                    <td
-                      style="
-                        padding:18px 24px;
-                        border-bottom:1px solid #ECEEF5;
-                        color:#7A8599;
-                      "
-                    >
-                      Role
-                    </td>
+                    <td style="padding:0 40px;">
+                      <table
+                        role="presentation"
+                        width="100%"
+                        cellpadding="0"
+                        cellspacing="0"
+                        style="
+                          border:1px solid #ECEEF5;
+                          border-radius:14px;
+                        "
+                      >
+                        <tr>
+                          <td style="padding:18px 24px; border-bottom:1px solid #ECE9FF; color:#384860; font-weight: 400;">
+                            Full Name
+                          </td>
+                          <td align="right" style="padding:18px 24px; border-bottom:1px solid #ECEEF5; font-weight:600; color: #121A26;">
+                            {{ full_name }}
+                          </td>
+                        </tr>
 
-                    <td
-                      align="right"
-                      style="
-                        padding:18px 24px;
-                        border-bottom:1px solid #ECEEF5;
-                        font-weight:600;
-                      "
-                    >
-                      {{ role }}
+                        <tr>
+                          <td style="padding:18px 24px; border-bottom:1px solid #ECE9FF; color:#384860; font-weight: 400;">
+                            Practice
+                          </td>
+                          <td align="right" style="padding:18px 24px; border-bottom:1px solid #ECEEF5; font-weight:600; color: #121A26;">
+                            {{ practice_name }}
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="padding:18px 24px; border-bottom:1px solid #ECE9FF; color:#384860; font-weight: 400;">
+                            Role
+                          </td>
+                          <td align="right" style="padding:18px 24px; border-bottom:1px solid #ECEEF5; font-weight:600; color: #121A26;">
+                            {{ role }}
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="padding:18px 24px; border-bottom:1px solid #ECE9FF; color:#384860; font-weight: 400;">
+                            Specialty
+                          </td>
+                          <td align="right" style="padding:18px 24px; border-bottom:1px solid #ECEEF5; font-weight:600; color: #121A26;">
+                            {{ specialty }}
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="padding:18px 24px; border-bottom:1px solid #ECE9FF; color:#384860; font-weight: 400;">
+                            Practice size
+                          </td>
+                          <td align="right" style="padding:18px 24px; border-bottom:1px solid #ECEEF5; font-weight:600; color: #121A26;">
+                            {{ practice_size }}
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="padding:18px 24px; color:#384860;">
+                            Submitted
+                          </td>
+                          <td align="right" style="padding:18px 24px; font-weight:600; color: #121A26;">
+                            {{ submitted_date }}
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
 
+                  <!-- What's Next -->
                   <tr>
-                    <td
-                      style="
-                        padding:18px 24px;
-                        border-bottom:1px solid #ECEEF5;
-                        color:#7A8599;
-                      "
-                    >
-                      Practice / Hospital
-                    </td>
+                    <td style="padding:32px 40px 8px;">
+                      <h3
+                        style="
+                          margin:0 0 20px;
+                          font-size:14px;
+                          font-weight:600;
+                          color:#5B0AFF;
+                        "
+                      >
+                        What happens next?
+                      </h3>
 
-                    <td
-                      align="right"
-                      style="
-                        padding:18px 24px;
-                        border-bottom:1px solid #ECEEF5;
-                        font-weight:600;
-                      "
-                    >
-                      {{ practice_name }}
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td width="36" valign="top" style="padding-bottom:20px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="24" height="24">
+                              <tr>
+                                <td
+                                  align="center"
+                                  valign="middle"
+                                  style="
+                                    background:#F3EEFF;
+                                    color:#5B0AFF;
+                                    font-size:11px;
+                                    font-weight:500;
+                                    border-radius:50%;
+                                    width:24px;
+                                    height:24px;
+                                  "
+                                >01</td>
+                              </tr>
+                            </table>
+                          </td>
+                          <td valign="top" style="padding-bottom:20px;">
+                            <p style="margin:0 0 4px; font-size:16px; font-weight:600; color:#121A26;">
+                              We'll match you to a cohort.
+                            </p>
+                            <p style="margin:0; font-size:16px; line-height:22px; color:#384860; font-weight: 400;">
+                              Based on your specialty and practice size, we group similar practices
+                              together for a focused rollout.
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td width="36" valign="top" style="padding-bottom:20px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="24" height="24">
+                              <tr>
+                                <td
+                                  align="center"
+                                  valign="middle"
+                                  style="
+                                    background:#F3EEFF;
+                                    color:#5B0AFF;
+                                    font-size:11px;
+                                    font-weight:500;
+                                    border-radius:50%;
+                                    width:24px;
+                                    height:24px;
+                                  "
+                                >02</td>
+                              </tr>
+                            </table>
+                          </td>
+                          <td valign="top" style="padding-bottom:20px;">
+                            <p style="margin:0 0 4px; font-size:16px; font-weight:600; color:#121A26;">
+                              Personal setup call.
+                            </p>
+                            <p style="margin:0; font-size:16px; line-height:22px; color:#384860; font-weight: 400;">
+                              Before go-live, we walk through your configuration, sign your BAA, and
+                              confirm Sernio is ready for your call patterns.
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td width="36" valign="top">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="24" height="24">
+                              <tr>
+                                <td
+                                  align="center"
+                                  valign="middle"
+                                  style="
+                                    background:#F3EEFF;
+                                    color:#5B0AFF;
+                                    font-size:11px;
+                                    font-weight:500;
+                                    border-radius:50%;
+                                    width:24px;
+                                    height:24px;
+                                  "
+                                >03</td>
+                              </tr>
+                            </table>
+                          </td>
+                          <td valign="top">
+                            <p style="margin:0 0 4px; font-size:16px; font-weight:600; color:#121A26;">
+                              You go live.
+                            </p>
+                            <p style="margin:0; font-size:16px; line-height:22px; color:#384860; font-weight: 400;">
+                              Once your BAA is signed, Sernio starts answering calls for
+                              {{ practice_name }} — same day.
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
 
+                  <!-- CTA -->
                   <tr>
-                    <td
-                      style="
-                        padding:18px 24px;
-                        border-bottom:1px solid #ECEEF5;
-                        color:#7A8599;
-                      "
-                    >
-                      Specialty
-                    </td>
-
-                    <td
-                      align="right"
-                      style="
-                        padding:18px 24px;
-                        border-bottom:1px solid #ECEEF5;
-                        font-weight:600;
-                      "
-                    >
-                      {{ specialty }}
+                    <td style="padding:28px 40px 40px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td
+                            style="
+                              background:#5B0AFF;
+                              border-radius:10px;
+                            "
+                          >
+                            <a
+                              href="https://app.sernioai.com/"
+                              style="
+                                display:inline-block;
+                                padding:16px 32px;
+                                font-size:16px;
+                                font-weight:600;
+                                color:#ffffff;
+                                text-decoration:none;
+                              "
+                            >
+                              Visit Our Website
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
-
-                  <tr>
-                    <td
-                      style="
-                        padding:18px 24px;
-                        color:#7A8599;
-                      "
-                    >
-                      Practice Size
-                    </td>
-
-                    <td
-                      align="right"
-                      style="
-                        padding:18px 24px;
-                        font-weight:600;
-                      "
-                    >
-                      {{ practice_size }}
-                    </td>
-                  </tr>
-
                 </table>
 
               </td>
             </tr>
-
-            <!-- What's Next -->
-            <tr>
-              <td style="padding:0 40px 40px;">
-
-                <div
-                  style="
-                    background:#F7F5FF;
-                    border:1px solid #E3D8FF;
-                    border-radius:14px;
-                    padding:24px;
-                  "
-                >
-
-                  <h3
-                    style="
-                      margin:0 0 12px;
-                      color:#5B0AFF;
-                      font-size:18px;
-                    "
-                  >
-                    What happens next?
-                  </h3>
-
-                  <p
-                    style="
-                      margin:0;
-                      color:#5F6B84;
-                      line-height:28px;
-                      font-size:15px;
-                    "
-                  >
-                    • Your waitlist spot has been secured.<br><br>
-
-                    • We'll notify you as soon as early access becomes
-                    available.<br><br>
-
-                    • Keep an eye on your inbox for exclusive product updates,
-                    launch announcements, and onboarding invitations.
-                  </p>
-
-                </div>
-
-              </td>
-            </tr>
-
 
             <!-- Footer -->
             <tr>
@@ -286,20 +352,18 @@
                 align="center"
                 style="
                   padding:30px;
-                  border-top:1px solid #F1F2F7;
                   color:#8A94A6;
                   font-size:13px;
                   line-height:24px;
                 "
               >
-
-                You're receiving this email because you joined the
-                <strong>SernioAi</strong> waitlist.
-
+                Questions? Just reply to this email — a real person reads it.
                 <br><br>
-
-                © {{ year }} SernioAi. All rights reserved.
-
+                <a href="https://app.sernioai.com/" style="color:#8A94A6; text-decoration:underline;">app.sernioai.com</a>
+                &nbsp;·&nbsp;
+                <a href="#" style="color:#8A94A6; text-decoration:underline;">Privacy</a>
+                &nbsp;·&nbsp;
+                <a href="#" style="color:#8A94A6; text-decoration:underline;">Unsubscribe</a>
               </td>
             </tr>
 
