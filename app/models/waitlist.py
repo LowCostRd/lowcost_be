@@ -26,7 +26,7 @@ class Waitlist:
             "role" : self.role,
             "email_address" : self.email_address,
             "hospital_name" : self.hospital_name,
-            "country" : country,
+            "country" : self.country,
             "specialty" : self.specialty,
             "number_of_practitioners": self.number_of_practitioners.value,
             "challenge": self.challenge,
