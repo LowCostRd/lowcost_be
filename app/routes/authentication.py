@@ -65,3 +65,16 @@ def register_waitlist():
     msg = user_service.waitlist_registration(data)
     json_response =  build_response(waitlist_success_message,201)
     return jsonify(json_response), 201
+
+@auth_bp.route('/v1/api/waitlist', methods=['GET'])
+def get_all_waitlist():
+    try:
+        page = int(request.args.get("page", 1))
+        limit = int(request.args.get("limit", 20))
+    except ValueError:
+        raise CopyException("page and limit must be integers", 400)
+
+    result = user_service.get_all_waitlist(page, limit)
+    json_response = build_response(result, 200)
+
+    return jsonify(json_response), 200
