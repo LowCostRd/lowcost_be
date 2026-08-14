@@ -274,7 +274,36 @@ class UserAuthenticationService(UserAuthentication):
         mongo.db.waitlist.insert_one(waitlist.to_dict())
 
         self._attempt_send_waitlist_email(waitlist)
-            
+    
+     def get_all_waitlist(self, page: int = 1, limit: int = 20) -> dict:
+        page = max(page, 1)
+        limit = min(max(limit, 1), 100)  # cap to prevent abuse via ?limit=999999
+        skip = (page - 1) * limit
+
+        total = mongo.db.waitlist.count_documents({})
+
+        waitlist_docs = (
+            mongo.db.waitlist
+            .find()
+            .sort("created_at", -1)
+            .skip(skip)
+            .limit(limit)
+        )
+
+        results = []
+        for doc in waitlist_docs:
+            doc["created_at"] = doc["created_at"].isoformat()
+            doc["updated_at"] = doc["updated_at"].isoformat()
+            results.append(doc)
+
+        return {
+            "items": results,
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "has_more": skip + limit < total
+        }
+                
         
                 
     
