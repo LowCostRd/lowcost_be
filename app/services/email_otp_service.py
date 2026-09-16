@@ -1,5 +1,6 @@
 import os
 import random
+import logging
 from datetime import datetime, timedelta
 from sendgrid import SendGridAPIClient
 
@@ -15,6 +16,8 @@ from ..constant.error_message import *
 from app.models.otp import Otp
 from app.validation.validate_email_address import *
 from app.constant.success_message import otp_resent
+
+logger = logging.getLogger(__name__)
 
 
 class EmailOTPService:
@@ -51,8 +54,14 @@ class EmailOTPService:
             response = sg.send(message)
             if response.status_code not in range(200, 300):
                 raise CopyException(otp_failed_to_send, response.status_code)
+        except CopyException:
+            raise
         except Exception as e:
-            raise CopyException(email_failed_to_send_otp, e.code)
+            # SendGrid client errors (e.g. UnauthorizedError) expose `status_code`,
+            # not `code` — fall back safely instead of raising AttributeError here.
+            status = getattr(e, "status_code", getattr(e, "code", 500))
+            logger.error(f"SendGrid error sending OTP to {to_email}: {e}")
+            raise CopyException(email_failed_to_send_otp, status)
 
     @classmethod
     def send_and_store_otp(cls, email: str):
@@ -161,12 +170,10 @@ class EmailOTPService:
                         response.status_code,
                     )
 
+            except CopyException:
+                raise
             except Exception as e:
                 raise CopyException(
                     email_failed_to_send_otp,
-                    getattr(e, "code", str(e)),
+                    getattr(e, "status_code", getattr(e, "code", str(e))),
                 )
-                
-
-                
-
